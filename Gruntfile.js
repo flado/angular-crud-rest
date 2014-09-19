@@ -35,11 +35,12 @@ module.exports = function(grunt) {
 	    	deploy: {
 	    		files: [
 	    			{ expand: true, src: ['<%= config.dist %>/*'], dest: '<%= config.server %>'},	    			
-	    			{ expand:true, src: ['./index.html'], dest: '<%= config.server %>'}
+	    			{ expand:true, src: ['./index.html'], dest: '<%= config.server %>'},
+	    			{ expand:true, src: ['./bower_components/**/*'], dest: '<%= config.server %>'}
 	    		]
 	    	}, 
 	    	index: {
-				files: [	    		
+				files: [	    							
 	    			{ expand:true, src: ['./index.html'], dest: '<%= config.dist %>'}
 	    		]
 	    	}
@@ -98,6 +99,7 @@ module.exports = function(grunt) {
 		    }
 		},
 
+
 	    jshint: {
 	      options: {
 	        curly: true,
@@ -130,10 +132,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-html2js');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-bower');
 
 	grunt.registerTask('build', 
 		'Compiles all of the assets and copies the files to the build directory & deply them into java server.', 
-		['clean:dist', 'jshint', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
+		[  'clean:dist', 'jshint', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
 	);
 
 	//grunt.registerTask('default', 'Watches the project for changes, automatically builds them and runs a server.', [ 'build', 'connect', 'watch' ]);

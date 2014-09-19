@@ -3,22 +3,16 @@
     <head>
         <title>angular-crud-grid</title>
         
-        <link href='//cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css' rel='stylesheet' type='text/css'>
+        <link href='bower_components/toastr/toastr.min.css' rel='stylesheet' type='text/css'>
+        <link href='bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' type='text/css'>        
+        <link href='bower_components/animate.css/animate.min.css' rel='stylesheet' type='text/css'>        
+        <link href='bower_components/angular-crud-rest/crud-grid.css' rel='stylesheet' type='text/css'><!-- grid CSS must be defined after Bootstrap css -->
 
-        <link href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css' rel='stylesheet' type='text/css'>
-        
-        <link href='http://daneden.github.io/animate.css/animate.min.css' rel='stylesheet' type='text/css'>
-
-        <!-- <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap-theme.css" rel='stylesheet' type='text/css'> -->
-
-        <!-- grid CSS must be defined after Bootstrap css because of -->
-        <link href='./dist/crud-grid.css' rel='stylesheet' type='text/css'>
-
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js"></script> <!-- optional -->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-animate.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+        <script src="bower_components/jquery/jquery.min.js"></script>
+        <script src="bower_components/toastr/toastr.min.js"></script> <!-- optional -->
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+        <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
         <style type="text/css">
             body {
@@ -30,36 +24,9 @@
               margin-bottom: 20px;
             }
 
-
-          /*  .blink-add, .blink-remove {
-              color:#555555;
-              -o-transition:.7s;
-              -ms-transition:.7s;
-              -moz-transition:.7s;
-              -webkit-transition:.7s;
-              transition:2s;
-            }
-
-            .blink,
-            .blink-add.blink-add-active {
-              color:#ffffff;
-              background-color:#333333;  
-            }
-
-            .blink-remove.blink-remove-active {
-
-            }*/
-
-/*
-            .blink:hover {
-              color:#ffffff;
-              background-color:#333333;
-            }*/
-
-
         </style>
 
-        <script src="./dist/crud-grid.js"></script>
+        <script src="bower_components/angular-crud-rest/crud-grid.js"></script>
 
         <script>          
 
@@ -148,29 +115,6 @@
 
     </div>
 
-
- <!-- 
-    <p>
-   <input type="button" value="set" ng-click="myCssVar='animated flash'">
-   <input type="button" value="clear" ng-click="myCssVar=''">
-   <br>
-   <table>
-       <tbody>
-           <tr >
-                <div>
-                    <td ng-class="myCssVar">Col 1</td>
-                    <td ng-class="myCssVar">Col 2</td>
-                    <td ng-class="myCssVar">Col 3</td>                    
-                </div>
-           </tr>
-       </tbody>
-
-   </table>
-   <br/>
-   <span >CSS-Animated Text</span>
- </p>
-
-  -->
 
 
     </body>
