@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d %5p %c{1}:%L - %m%n</pattern>						
+		</encoder>
+	</appender>
+
+	<!-- Levels: TRACE, DEBUG, INFO, WARN, ERROR -->
+
+	<logger name="com.flado" level="DEBUG" />
+	
+	<root level="ERROR">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+	<!-- 3rdparty Loggers -->
+	
+	<logger name="org.hibernate.SQL" level="DEBUG" />
+ 
+	<logger name="org.springframework.web">
+		<level value="debug" />
+	</logger>
+	
+	<logger name="org.springframework.data.rest">
+		<level value="debug" />
+	</logger>
+
+</configuration>

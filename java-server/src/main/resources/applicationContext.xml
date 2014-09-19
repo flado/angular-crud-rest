@@ -1,0 +1,65 @@
+ <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+<!--
+	The ROOT  application context  
+	Spring MVC dispatcher servlet configuration (/WEB-INF/mvc-dispatcher-servlet.xml) inherits this root context configuration 
+-->
+		
+	<!-- activate annotations -->
+	<context:annotation-config />	
+	
+	<aop:aspectj-autoproxy />
+
+	<!-- Spring Data JPA -->
+	<jpa:repositories base-package="com.flado.data.dao"
+		entity-manager-factory-ref="entityManagerFactory"
+		transaction-manager-ref="transactionManager" /> <!-- ref is optional: only if using multiple EMF and/or TXN managers is required -->
+
+	<!-- TXN Manager -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
+		p:entityManagerFactory-ref="entityManagerFactory" />
+	
+ 	<jdbc:embedded-database id="dataSource" type="H2"  >	 			
+		<jdbc:script location="classpath:create-schema.sql" execution="INIT" />
+		<jdbc:script location="classpath:insert-data.sql" execution="INIT" />		
+	</jdbc:embedded-database>
+ 		
+ 	<!-- override p:databasePlatform for the JPAVendorAdapter [ p:showSql="true" ]  -->		
+	<bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" 
+			 p:databasePlatform="org.hibernate.dialect.H2Dialect" 
+			 p:showSql="true"   />
+		
+	<!-- hibernate.hbm2ddl.auto: validate: validate the schema, makes no changes 
+		to the database. update: update the schema. create: creates the schema, destroying 
+		previous data. create-drop: drop the schema at the end of the session. NOTE: 
+		for production database, do not set hibernate.hbm2ddl.auto -> the default 
+		is to make no database changes. -->
+		
+	<util:properties id="hibernateProperties">
+		<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+		<prop key="hibernate.hbm2ddl.auto">validate</prop>		
+	</util:properties>
+		
+	<bean id="entityManagerFactory"  class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"	  			  			 					
+			p:dataSource-ref="dataSource" 
+			p:packagesToScan="com.flado.data.model"
+			p:jpaVendorAdapter-ref="jpaVendorAdapter"
+			p:jpaPropertyMap-ref="hibernateProperties" />
+			
+</beans>

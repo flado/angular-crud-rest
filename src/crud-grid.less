@@ -1,0 +1,54 @@
+﻿@grid-header-background-color: #006dcc;
+@grid-header-color: #fff;
+@grid-margin-bottom: 4px;
+@error-border-color: #b94a48;
+
+
+table.crud-grid th:hover:not(:first-child) {
+    cursor: pointer;
+}
+
+table.crud-grid {
+	margin-bottom: @grid-margin-bottom;
+}
+
+/*.has-error{
+	border-color: @error-border-color;
+}*/
+
+table.crud-grid .header {
+  background-color: #428bca;
+  border-color: #428bca;
+    color: #fff;
+    font-weight: bold;
+}
+
+table.crud-grid .navigation {
+  background-color: #e0e0e0; /* #f8f8f8 */
+  font-weight: bold;
+}
+
+.pagination {
+  margin: 0px 0px 0px 0px;
+}
+
+/*.editRow{  
+  margin-bottom: 5px;
+}*/
+
+
+/* angular styles for form/fields validity */
+.ng-invalid {
+  border-color: #b94a48;
+  border-width: 2px;
+}
+
+.ng-valid {}
+.ng-pristine  {  }
+.ng-dirty     {  }
+
+/* really specific css rules applied by angular */
+.ng-invalid-required    {  }
+.ng-invalid-minlength     {  }
+.ng-valid-max-length    {  }
+

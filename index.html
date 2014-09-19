@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>angular-crud-grid</title>
+        
+        <link href='//cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.min.css' rel='stylesheet' type='text/css'>
+
+        <link href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css' rel='stylesheet' type='text/css'>
+        
+        <link href='http://daneden.github.io/animate.css/animate.min.css' rel='stylesheet' type='text/css'>
+
+        <!-- <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap-theme.css" rel='stylesheet' type='text/css'> -->
+
+        <!-- grid CSS must be defined after Bootstrap css because of -->
+        <link href='./dist/crud-grid.css' rel='stylesheet' type='text/css'>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.min.js"></script> <!-- optional -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-animate.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+
+        <style type="text/css">
+            body {
+              padding-top: 60px;
+              padding-bottom: 20px;
+            }
+
+            .navbar {
+              margin-bottom: 20px;
+            }
+
+
+          /*  .blink-add, .blink-remove {
+              color:#555555;
+              -o-transition:.7s;
+              -ms-transition:.7s;
+              -moz-transition:.7s;
+              -webkit-transition:.7s;
+              transition:2s;
+            }
+
+            .blink,
+            .blink-add.blink-add-active {
+              color:#ffffff;
+              background-color:#333333;  
+            }
+
+            .blink-remove.blink-remove-active {
+
+            }*/
+
+/*
+            .blink:hover {
+              color:#ffffff;
+              background-color:#333333;
+            }*/
+
+
+        </style>
+
+        <script src="./dist/crud-grid.js"></script>
+
+        <script>          
+
+            angular.module('demo', ['angular.crud.grid', 'ui.bootstrap']) // ui.bootstrap is MANDATORY dependency for crud grid
+
+            .controller('DemoController1', function($scope,$log, DemoNotificationService) {
+                $log.debug('>> DemoController1 <<');
+                $scope.gridReadOnly = false; //may be determine using an external Authorization service
+                $scope.notificationService = DemoNotificationService;
+            })
+
+            .controller('DemoController2', function($scope) {
+
+            })
+            .factory('DemoNotificationService', function ($log) {
+                toastr.options.closeButton = true;
+                return {
+                    notify: function(operation, status, data) {
+                        $log.debug('## notify - operation:', operation, '  ## status: ', status, ' ## data: ', data);
+                        if (operation == 'ADD') {
+                            if (status == 201) {
+                                toastr.success('Record added OK', "Success");
+                            } else {
+                                toastr.error('Error adding record', "Error");
+                            }
+                        } else if (operation == 'UPDATE') {
+                            if (status == 204) {
+                                toastr.success('Record updated', "Success");
+                            } else if (status == 409) {
+                                toastr.info('Could not update this record because it is being used in some existing TPP rules', "Info");
+                            } else {
+                                toastr.error('Error updating record', "Error");
+                            }
+                        } else if (operation == 'DELETE') {
+                            if (status == 204) {
+                                toastr.success('Record deleted', "Success");
+                            } else if (status == 409) {
+                                toastr.info('Could not delete this record because it is being used in some existing TPP rules', "Info");
+                            } else {
+                                toastr.error('Error deleting record', "Error");
+                            }
+                        } else if (operation == "FORM_INVALID") {
+                            toastr.warning('Invalid input! Please check again and complete highlighted fields', "Warning");
+                        } else throw new Error('unknown opration type', result);
+
+                    }
+                };
+            });
+
+        </script>
+    <head>
+
+    <body ng-app="demo">
+
+       
+    <div class="container">        
+
+        <!-- Static navbar -->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">      
+            <div class="navbar-header">          
+                <div class="navbar-brand ">&lt; angular-crud-grid &gt; built for <a href="http://projects.spring.io/spring-data-rest/">Spring Data REST</a> backend - DEMO</div>                                        
+
+                <a href="https://github.com/flado/angular-crud-grid">
+                <img style="position: absolute; top: 0px; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub">
+                </a>
+            </div>    
+        </div>
+        
+        <div ng-controller="DemoController1">
+            <div ng-form="myForm">
+                <div crud-grid read-only = "gridReadOnly"
+                notification-service = "notificationService"
+                grid-options="{
+                    baseUrl: 'api',
+                    resourceName: 'stream',
+                    columnDefs: [
+                        {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true},
+                        {field: 'code', displayName: 'Stream Number', width:'col-md-2', searchable: true, required: true, validPattern: '/^[0-9]{1,10}$/' },
+                        {field: 'desc', displayName: 'Description', searchable: true, required: true, validPattern: '/^[_ \'0-9A-Za-z/]{1,50}$/' }
+                    ],
+                    orderBy: [{ field: 'id', sort: 'asc' }],
+                    searchFilterUrl: '/findByCodeOrDesc',
+                    itemsPerPage: 5 }"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+ <!-- 
+    <p>
+   <input type="button" value="set" ng-click="myCssVar='animated flash'">
+   <input type="button" value="clear" ng-click="myCssVar=''">
+   <br>
+   <table>
+       <tbody>
+           <tr >
+                <div>
+                    <td ng-class="myCssVar">Col 1</td>
+                    <td ng-class="myCssVar">Col 2</td>
+                    <td ng-class="myCssVar">Col 3</td>                    
+                </div>
+           </tr>
+       </tbody>
+
+   </table>
+   <br/>
+   <span >CSS-Animated Text</span>
+ </p>
+
+  -->
+
+
+    </body>
+</html>

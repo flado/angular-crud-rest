@@ -1,0 +1,49 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+      version="3.0"> 
+	
+  	<display-name>Spring DATA Rest Services</display-name>
+	
+   	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath*:applicationContext.xml			
+		</param-value>
+	</context-param>
+  
+	<!-- by default it's using 'mvc-dispatcher-servlet.xml' file from WEB-INF folder -->
+	<servlet>
+		<servlet-name>mvc-dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>	
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+  	
+	<servlet>
+		<servlet-name>ViewStatusMessages</servlet-name>
+	    <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
+	</servlet>
+	    
+   	<servlet-mapping>
+    	<servlet-name>ViewStatusMessages</servlet-name>
+    	<url-pattern>/logback</url-pattern>    	
+  	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>mvc-dispatcher</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>	
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    
+</web-app>

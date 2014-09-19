@@ -1,0 +1,135 @@
+
+<div ng-show="loading">Loading Data...</div>
+
+
+<!-- Search filter -->
+<div accordion ng-if="searchRequired">
+    <div accordion-group is-open="isopen">
+        <div accordion-heading>
+            Search Filter:
+                <span ng-repeat="col in gridOptions.columnDefs">
+                    <span class="filterText" ng-if="col.searchable" ng-show="searchFilter[col.field]">{{col.displayName}} = {{searchFilter[col.field]}}</span>
+                </span>
+             <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
+        </div>
+        <table class="table table-condensed ">
+            <thead>
+                <tr>
+                    <th class="col-md-1">
+                        &nbsp;
+                    </th>
+                    <th class="{{col.width}}" ng-repeat="col in gridOptions.columnDefs">
+                        <div ng-show="col.searchable">{{col.displayName}}</div>
+                        <div ng-show="!col.searchable">&nbsp;</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <button class="btn btn-primary" ng-click="search()">Search</button>
+                    </td>
+                    <td ng-repeat="col in gridOptions.columnDefs">
+                        <span ng-if="!col.searchable">&nbsp;</span>
+                        <span ng-if="col.searchable">
+                            <input type="text" class="form-control" placeholder="{{col.displayName}}" ng-model="searchFilter[col.field]" />
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- page with data -->
+<table class="crud-grid table table-hover table-bordered table-condensed ">
+    <thead>
+        <tr class="navigation">
+            <th colspan="{{gridOptions.columnDefs.length + 1}}">
+                <pagination total-items="pagination.totalItems"
+                    page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
+                    max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>
+            </th>
+        </tr>
+        <tr class="header">
+            <th class="col-md-1" ng-if="!readOnly">
+                <div class="btn btn-default btn-xs" ng-click="toggleAddMode()">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </div>
+            </th>
+
+            <th class="{{col.width}}" ng-repeat="col in gridOptions.columnDefs"  ng-click="setViewOrderBy(col.field)">
+                <div>
+                    {{col.displayName}}
+                    <i class="glyphicon" ng-class="{'glyphicon-sort-by-alphabet': viewOrderBy.sort == 'asc', 'glyphicon-sort-by-alphabet-alt': viewOrderBy.sort == 'desc'}" ng-show="viewOrderBy.field == col.field"></i>
+                </div>
+            </th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+    <tr ng-if="addMode && !readOnly" ng-form="addForm">
+        <td>
+            <div class="btn-group">
+                <div class="btn btn-default btn-xs" ng-click="addObject()">
+                    <span class="glyphicon glyphicon-save" ></span>
+                </div>
+                <div class="btn btn-default btn-xs" ng-click="toggleAddMode()">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>
+            </div>
+        </td>
+        <!-- Object details in ADD mode : ['{{col.field}}'] -->
+        <td ng-repeat="col in gridOptions.columnDefs" >
+            <span ng-if="col.readOnly"></span>
+            <span ng-if="!col.readOnly">
+                <input type="text" dynamic-name="col.field" class="form-control" placeholder="{{col.displayName}}" ng-class="{'has-error': hasError(addForm[col.field]) }" ng-model="object[col.field]" ng-required="{{col.required}}" ng-pattern="{{col.validPattern}}" />
+            </span>
+        </td>
+    </tr>
+    <tr ng-repeat="object in objects | orderBy: viewOrderBy.field: viewOrderBy.sort == 'desc'">
+        <!-- Edit Actions -->
+        <td ng-if="!readOnly">
+            <div class="btn-toolbar" ng-show="object.$edit == null">
+                <div class="btn-group">
+                    <div class="btn btn-default btn-xs" ng-click="toggleEditMode(object)">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </div>
+                    <div class="btn btn-default btn-xs"  ng-click="deleteObject(object)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar" ng-show="object.$edit">
+                <div class="btn-group">
+                    <div class="btn btn-default btn-xs" ng-click="updateObject(object)">
+                        <span class="glyphicon glyphicon-save"></span>
+                    </div>
+                    <div class="btn btn-default btn-xs" ng-click="toggleEditMode(object)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <!-- Object details -->
+
+        <td ng-repeat="col in gridOptions.columnDefs">
+            <span ng-if="col.readOnly" >{{object[col.field]}}</span>
+            <span ng-if="!col.readOnly" ng-show="object.$edit == null" ng-class="object.$animated">{{object[col.field]}}</span>
+            <ng-form name="editForm" ng-if="editMode">
+                <input class="form-control" ng-if="isInputForm(object, col)" ng-model="object.$edit[col.field]" ng-required="{{col.required}}" ng-pattern="{{col.validPattern}}" model-change-blur />
+            </ng-form>
+        </td>
+    </tr>
+    <tr class="navigation">
+        <td colspan="{{gridOptions.columnDefs.length+1}}">
+                <pagination total-items="pagination.totalItems"
+                    page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
+                    max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>
+
+        </td>
+    </tr>
+    </tbody>
+</table>

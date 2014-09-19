@@ -1,0 +1,300 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.flado.server</groupId>
+	<artifactId>crud-grid-rest</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>Spring Data REST server</name>
+	<description>sample implementation of Spring Data REST and usage of angular-crud-grid directive</description>
+
+
+	<properties>
+
+		<!-- Maven plugins -->
+		<maven-compiler-plugin.source>1.6</maven-compiler-plugin.source>
+		<maven-compiler-plugin.target>1.6</maven-compiler-plugin.target>
+		<maven-enforcer-plugin.requireJavaVersion>[1.6,1.8)</maven-enforcer-plugin.requireJavaVersion>
+		<maven-enforcer-plugin.requireMavenVersion>[2.2,4.0)</maven-enforcer-plugin.requireMavenVersion>
+
+		<!-- project build properties -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- Spring API -->
+		<spring.version>4.0.6.RELEASE</spring.version>
+		<spring-data-jpa.version>1.6.2.RELEASE</spring-data-jpa.version>
+		<spring-data-rest.version>2.1.2.RELEASE</spring-data-rest.version>
+
+		<jackson.version>2.3.1</jackson.version>
+
+		<!-- <dsl.version>3.4.2</dsl.version> -->
+		<!-- logging -->
+		<slf4j.version>1.6.6</slf4j.version>
+		<logback-classic.version>1.0.6</logback-classic.version>
+
+		<!-- Servlet API -->
+		<javax-servlet.version>3.0.1</javax-servlet.version>
+
+		<!-- persistence -->
+		<commons-dbcp.version>1.4</commons-dbcp.version>
+		<h2.version>1.3.170</h2.version>
+		<hibernate.version>4.1.9.Final</hibernate.version>
+
+		<!-- <validation-api.version>1.0.0.GA</validation-api.version> <hibernate-validator.version>4.3.1.Final</hibernate-validator.version> -->
+		<!-- commons API -->
+		<!-- <commons-lang3.version>3.1</commons-lang3.version> <commons-lang.version>2.6</commons-lang.version> -->
+
+		<guava.version>13.0.1</guava.version>
+
+		<!-- <aal.tam.springsecurity.version>1.0.2</aal.tam.springsecurity.version> -->
+
+		<!-- testing -->
+
+		<!-- proxying -->
+		<!-- <cglib.version>2.2.2</cglib.version> <aspectjweaver.version>1.7.1</aspectjweaver.version> -->
+
+		<!-- EHCache API -->
+		<!-- <ehcache-core.version>2.6.0</ehcache-core.version> <commons-io.version>2.4</commons-io.version> -->
+		<!-- J2EE version -->
+		<javaee-api.version>6.0</javaee-api.version>
+
+		<!-- GSON verson -->
+		<!-- <gson.version>1.7.1</gson.version> -->
+
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+			<version>${javax-servlet.version}</version>
+		</dependency>
+
+
+		<!-- Spring APIs -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-webmvc</artifactId>
+			<version>${spring-data-rest.version}</version>
+		</dependency>
+
+		<!-- persistence -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>${spring-data-jpa.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+
+		<!-- H2 embedded database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+		</dependency>
+
+		<!-- Apache commons DBCP -->
+		<!-- <dependency> <groupId>commons-dbcp</groupId> <artifactId>commons-dbcp</artifactId> 
+			</dependency> -->
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.3</version>
+			<type>jar</type>
+			<classifier>jdk15</classifier>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-classic.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
+
+
+	</dependencies>
+
+
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<attachClasses>true</attachClasses>
+					<ignoreWebxml>false</ignoreWebxml>
+					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<configuration>
+					<port>9444</port>
+					<path>/${project.artifactId}</path>
+					<backgroundProcessorDelay>2</backgroundProcessorDelay>
+					<contextReloadable>true</contextReloadable>
+				</configuration>
+				<dependencies>
+					<!-- H2 driver in case we use H2 in-memory database -->
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+						<version>1.3.170</version>
+						<scope>compile</scope>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>
+											[1.6,)
+										</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
