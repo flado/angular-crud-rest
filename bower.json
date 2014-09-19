@@ -15,8 +15,7 @@
   "homepage": "https://github.com/flado/angular-crud-rest",
   "ignore": [
     "**/.*",
-    "node_modules",
-    "java-server"
+    "node_modules",    
     "bower_components",
     "test",
     "tests"

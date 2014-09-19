@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 
 		clean: {
 			dist: {
-				src: ['<%= config.dist %>']
+				src: ['<%= config.dist %>/*.js','<%= config.dist %>/*.css', '<%= config.dist %>/*.html']
 			},
 			temp: {
 				src: ['<%= config.temp %>']
@@ -36,6 +36,11 @@ module.exports = function(grunt) {
 	    		files: [
 	    			{ expand: true, src: ['<%= config.dist %>/*'], dest: '<%= config.server %>'},	    			
 	    			{ expand:true, src: ['./index.html'], dest: '<%= config.server %>'}
+	    		]
+	    	}, 
+	    	index: {
+				files: [	    		
+	    			{ expand:true, src: ['./index.html'], dest: '<%= config.dist %>'}
 	    		]
 	    	}
 	    },
@@ -128,7 +133,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('build', 
 		'Compiles all of the assets and copies the files to the build directory & deply them into java server.', 
-		['clean', 'jshint', 'less', 'html2js', 'concat', 'clean:temp', 'copy:deploy']
+		['clean:dist', 'jshint', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
 	);
 
 	//grunt.registerTask('default', 'Watches the project for changes, automatically builds them and runs a server.', [ 'build', 'connect', 'watch' ]);
