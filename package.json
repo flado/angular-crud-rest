@@ -1,13 +1,15 @@
 {
-  "name": "crud-grid",
-  "version": "0.0.0",
+  "name": "angular-crud-rest",
+  "version": "0.0.1",
   "description": "Angular grid for Spring Data REST backend",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  
   "author": "Florin.Adochiei@gmail.com",
   "license": "MIT",
+
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",

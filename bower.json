@@ -16,6 +16,7 @@
   "ignore": [
     "**/.*",
     "node_modules",
+    "java-server"
     "bower_components",
     "test",
     "tests"
