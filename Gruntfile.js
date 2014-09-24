@@ -152,7 +152,22 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('build',
 		'Compiles all of the assets and copies the files to the build directory & deply them into java server.',
-		[  'clean:dist', 'jshint', 'bump', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
+		[  'clean:dist', 'jshint', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
+	);
+
+	grunt.registerTask('release-patch',
+		'Build and generate new release patch version',
+		[  'build', 'bump:patch']
+	);
+
+	grunt.registerTask('release-minor',
+		'Build and generate new release minor version',
+		[  'build', 'bump:minor']
+	);
+
+	grunt.registerTask('release-major',
+		'Build and generate new release minor version',
+		[  'build', 'bump:major']
 	);
 
 	//grunt.registerTask('default', 'Watches the project for changes, automatically builds them and runs a server.', [ 'build', 'connect', 'watch' ]);
