@@ -165,20 +165,19 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('release-patch',
 		'Build and generate new release patch version',
-		[ 'bump-only:patch', 'build', 'bump-commit']
+		[ 'bump-only:patch', 'build', 'bump-commit' ]
 	);
 
 	grunt.registerTask('release-minor',
 		'Build and generate new release minor version',
-		[  'build', 'bump:minor']
+		[ 'bump-only:minor', 'build', 'bump-commit' ]
 	);
 
 	grunt.registerTask('release-major',
 		'Build and generate new release minor version',
-		[  'build', 'bump:major']
+		[ 'bump-only:major', 'build', 'bump-commit' ]
 	);
-
-	//grunt.registerTask('default', 'Watches the project for changes, automatically builds them and runs a server.', [ 'build', 'connect', 'watch' ]);
+	
 	grunt.registerTask('default', ['build', 'watch']);
 
 };
