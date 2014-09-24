@@ -4,6 +4,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		// Metadata.
 		pkg: grunt.file.readJSON('package.json'),
+
 		banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
 			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
 			'<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
@@ -102,7 +103,7 @@ module.exports = function(grunt) {
 		bump: {
 		    options: {
 		      files: ['package.json', './dist/bower.json'],
-		      updateConfigs: [],
+		      updateConfigs: ['pkg'],
 		      commit: true,
 		      commitMessage: 'Release v%VERSION%',
 		      commitFiles: ['-a'],
