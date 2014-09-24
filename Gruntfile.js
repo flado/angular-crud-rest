@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             },
             function (callback) {
                 grunt.log.writeln('GIT: Commit into: \'%s\'', repoFolder);
-                grunt.util.spawn({ cmd: 'git', args: [ 'commit', '-m', '--force', options.commitMessage ], opts: { cwd: repoFolder } }, callback);
+                grunt.util.spawn({ cmd: 'git', args: [ 'commit', '-m', options.commitMessage ], opts: { cwd: repoFolder } }, callback);
             } /*,
             function (callback) {
                 grunt.log.writeln('Pushing tag \'%s\' to \'%s\' remote', options.tag, options.remote);
