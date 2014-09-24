@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 
         var options = this.options({
             //remote: 'origin',
-            tagName: this.options().tagName/*,
+            tagMessage: this.options().tagName/*,
             force: this.options().force,*/
         });
 
@@ -18,7 +18,8 @@ module.exports = function(grunt) {
             },            
             function (callback) {
                 grunt.log.writeln('GIT: Add changes from:  \'%s\'', repoFolder);
-                grunt.util.spawn({ cmd: 'git', args: [ 'add', '.', '--force'], opts: { cwd: repoFolder } }, callback);
+                //add all changed files
+                grunt.util.spawn({ cmd: 'git', args: [ 'add', '.'], opts: { cwd: repoFolder } }, callback);
             },
             function (callback) {
                 grunt.log.writeln('GIT: Commit into: \'%s\'', repoFolder);
@@ -163,41 +164,12 @@ module.exports = function(grunt) {
 	  		release: {
 	  			options: {
 	  				tagName: '<%= pkg.version %>',
-	  				messageMessage: 'Version <%= pkg.version %>',
+	  				tagMessage: 'Version <%= pkg.version %>',
 	  				commitMessage: 'Release <%= pkg.version %>'
 	  			},
 	  			src: './dist'
 	  		}
 	  	},
-
-/*
-	  	gittag: {
-		    dist: {
-		      options: {
-		        tag: 'v%VERSION%',
-                message: 'Version %VERSION%',
-		      }
-		    }
-		  },
-
-	  	gitcommit: {
-		    dist: {
-		      options: {
-		        // Target-specific options go here.
-		         message: 'Release v%VERSION%',
-		      },
-		      files: {
-		          // Specify the files you want to commit
-		          src: ['./dist/*']
-		      }
-		    }
-		},*/
-
-		/*execute: {
-	        release: {
-	            src: ['./dist/Gruntfile.js']
-	        }
-    	}*/
 
 	    jshint: {
 	      options: {
