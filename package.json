@@ -1,6 +1,6 @@
 {
   "name": "crud-grid",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Angular grid for Spring Data REST backend",
   "main": "index.js",
   "scripts": {

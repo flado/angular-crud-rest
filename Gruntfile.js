@@ -34,13 +34,13 @@ module.exports = function(grunt) {
 	    copy: {
 	    	deploy: {
 	    		files: [
-	    			{ expand: true, src: ['<%= config.dist %>/*'], dest: '<%= config.server %>'},	    			
+	    			{ expand: true, src: ['<%= config.dist %>/*'], dest: '<%= config.server %>'},
 	    			{ expand:true, src: ['./index.html'], dest: '<%= config.server %>'},
 	    			{ expand:true, src: ['./bower_components/**/*'], dest: '<%= config.server %>'}
 	    		]
-	    	}, 
+	    	},
 	    	index: {
-				files: [	    							
+				files: [
 	    			{ expand:true, src: ['./index.html'], dest: '<%= config.dist %>'}
 	    		]
 	    	}
@@ -77,7 +77,7 @@ module.exports = function(grunt) {
 	      js: {
 	        files: ['<%= config.js %>', '<%= config.tpl %>', '<%= config.src %>/*.less'],
 	        tasks: ['build']
-	      },	      
+	      },
 	      index: {
 	        files: './index.html',
 	        tasks: ['copy:deploy']
@@ -86,7 +86,7 @@ module.exports = function(grunt) {
 
     	html2js: {
     		options: {
-		      	module: 'angular.crud.grid', // no bundle module for all the html2js templates          		
+		      	module: 'angular.crud.grid', // no bundle module for all the html2js templates
 		      	singleModule: true
 		      	//module:false,
 		      	/*rename: function() {
@@ -99,7 +99,7 @@ module.exports = function(grunt) {
 		    }
 		},
 
-		bump: {			
+		bump: {
 		    options: {
 		      files: ['package.json', './dist/bower.json'],
 		      updateConfigs: [],
@@ -150,8 +150,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-bower');
 	grunt.loadNpmTasks('grunt-bump');
 
-	grunt.registerTask('build', 
-		'Compiles all of the assets and copies the files to the build directory & deply them into java server.', 
+	grunt.registerTask('build',
+		'Compiles all of the assets and copies the files to the build directory & deply them into java server.',
 		[  'clean:dist', 'jshint', 'bump', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
 	);
 
