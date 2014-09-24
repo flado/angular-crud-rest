@@ -13,16 +13,16 @@ module.exports = function(grunt) {
 
         grunt.util.async.series([
             function (callback) {
-                grunt.log.writeln('GIT: Creating local tag \'%s\' into: \'%s\'', options.tagName, repoFolder);
+                grunt.log.writeln('Creating local tag \'%s\' into: \'%s\'', options.tagName, repoFolder);
                 grunt.util.spawn({ cmd: 'git', args: [ 'tag', '-a', options.tagName, '-m', options.tagMessage ], opts: { cwd: repoFolder } }, callback);
             },            
             function (callback) {
-                grunt.log.writeln('GIT: Add changes from:  \'%s\'', repoFolder);
+                grunt.log.writeln('Add local changes in:  \'%s\'', repoFolder);
                 //add all changed files
                 grunt.util.spawn({ cmd: 'git', args: [ 'add', '.'], opts: { cwd: repoFolder } }, callback);
             },
             function (callback) {
-                grunt.log.writeln('GIT: Commit into: \'%s\'', repoFolder);
+                grunt.log.writeln('Commit into: \'%s\'', repoFolder);
                 grunt.util.spawn({ cmd: 'git', args: [ 'commit', '-m', options.commitMessage ], opts: { cwd: repoFolder } }, callback);
             } /*,
             function (callback) {
