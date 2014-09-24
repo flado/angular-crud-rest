@@ -2,6 +2,7 @@ bower_components
 
 # java static resources
 java-server/src/main/webapp/bower_components
+java-server/src/main/webapp/dist
 java-server/src/main/webapp/index.html
 
 
