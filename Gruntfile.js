@@ -99,6 +99,21 @@ module.exports = function(grunt) {
 		    }
 		},
 
+		bump: {			
+		    options: {
+		      files: ['package.json', './dist/bower.json'],
+		      updateConfigs: [],
+		      commit: true,
+		      commitMessage: 'Release v%VERSION%',
+		      commitFiles: ['-a'],
+		      createTag: true,
+		      tagName: 'v%VERSION%',
+		      tagMessage: 'Version %VERSION%',
+		      /*push: true,
+		      pushTo: 'upstream',*/
+		      gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+		    }
+	  	},
 
 	    jshint: {
 	      options: {
@@ -133,10 +148,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-bower');
+	grunt.loadNpmTasks('grunt-bump');
 
 	grunt.registerTask('build', 
 		'Compiles all of the assets and copies the files to the build directory & deply them into java server.', 
-		[  'clean:dist', 'jshint', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
+		[  'clean:dist', 'jshint', 'bump', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
 	);
 
 	//grunt.registerTask('default', 'Watches the project for changes, automatically builds them and runs a server.', [ 'build', 'connect', 'watch' ]);

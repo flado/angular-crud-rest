@@ -282,6 +282,7 @@
                 }
                 return valid;
             };
+            
 
             scope.setViewOrderBy = function (col) {
                 var field = col.field;
@@ -328,7 +329,7 @@
                     scope.loading = false;
                 });
             };
-            
+
             scope.hasError = function(formField, validation) {
               $log.debug('> hasError -> formField: ', formField);
               var error = false;
