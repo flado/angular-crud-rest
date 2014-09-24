@@ -75,7 +75,8 @@ module.exports = function(grunt) {
 	    copy: {
 	    	deploy: {
 	    		files: [
-	    			{ expand: true, src: ['<%= config.dist %>/*', './index.html', './bower_components/**/*' ], dest: '<%= config.server %>'} ]
+	    		
+	    			{ expand: true, src: ['<%= config.dist %>/*', './index.html', './bower_components/**/*'], dest: '<%= config.server %>'} ]
 	    	},
 	    	deploy_index: {
 	    		files: [ { expand:true, src: ['./index.html'], dest: '<%= config.server %>'} ]
