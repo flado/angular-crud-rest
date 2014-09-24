@@ -165,7 +165,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('release-patch',
 		'Build and generate new release patch version',
-		[  'build', 'bump:patch']
+		[ 'bump-only:patch', 'build', 'bump-commit']
 	);
 
 	grunt.registerTask('release-minor',
