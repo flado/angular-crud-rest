@@ -49,14 +49,26 @@ module.exports = function(grunt) {
 
 	    // Task configuration.
 	    concat: {
-	      options: {
-	        banner: '<%= banner %>',
-	        stripBanners: true
-	      },
-	      dist: {
-	        src: ['<%= config.temp %>/<%= pkg.name %>.html.js', '<%= config.js %>'],
-	        dest: '<%= config.dist %>/<%= pkg.name %>.js'
-	      }
+	    	js: {
+	    		options: {
+		        	banner: '<%= banner %>',
+		        	stripBanners: true
+		      	},
+		      	dist: {
+		        	src: ['<%= config.temp %>/<%= pkg.name %>.html.js', '<%= config.js %>'],
+		        	dest: '<%= config.dist %>/<%= pkg.name %>.js'
+		      	}
+	    	},
+	    	css: {
+				options: {
+		        	banner: '<%= banner %>',
+		        	stripBanners: true
+		      	},
+		      	dist: {
+		        	src: ['<%= config.dist %>/<%= pkg.name %>.css'],
+		        	dest: '<%= config.dist %>/<%= pkg.name %>.css'
+		      	}
+	    	}	      
     	},
 
     	less: {
