@@ -12,19 +12,23 @@ module.exports = function(grunt) {
         });
 
         grunt.util.async.series([
-            function (callback) {
-                grunt.log.writeln('Creating local tag \'%s\' into: \'%s\'', options.tagName, repoFolder);
-                grunt.util.spawn({ cmd: 'git', args: [ 'tag', '-a', options.tagName, '-m', options.tagMessage ], opts: { cwd: repoFolder } }, callback);
-            },            
+            //ADD CHANGES
             function (callback) {
                 grunt.log.writeln('Add local changes in:  \'%s\'', repoFolder);
                 //add all changed files
                 grunt.util.spawn({ cmd: 'git', args: [ 'add', '.'], opts: { cwd: repoFolder } }, callback);
             },
+            //COMMIT CHANGES
             function (callback) {
                 grunt.log.writeln('Commit into: \'%s\'', repoFolder);
                 grunt.util.spawn({ cmd: 'git', args: [ 'commit', '-m', options.commitMessage ], opts: { cwd: repoFolder } }, callback);
-            } /*,
+            },
+            //TAG RELEASE
+            function (callback) {
+                grunt.log.writeln('Creating local tag \'%s\' into: \'%s\'', options.tagName, repoFolder);
+                grunt.util.spawn({ cmd: 'git', args: [ 'tag', '-a', options.tagName, '-m', options.tagMessage ], opts: { cwd: repoFolder } }, callback);
+            }
+            /*,
             function (callback) {
                 grunt.log.writeln('Pushing tag \'%s\' to \'%s\' remote', options.tag, options.remote);
                 var args = [ 'push', options.remote, '--tags' ];
@@ -75,7 +79,7 @@ module.exports = function(grunt) {
 	    	},
 	    	deploy_index: {
 	    		files: [ { expand:true, src: ['./index.html'], dest: '<%= config.server %>'} ]
-	    	},	    	
+	    	},
 	    	licenses: {
 				files: [
 	    			{ expand:true, src: ['./LICENSE-MIT'], dest: '<%= config.dist %>'}
@@ -228,7 +232,7 @@ module.exports = function(grunt) {
 		'Build and generate new release minor version',
 		[ 'bump-only:major', 'build', 'bump-commit' ]
 	);
-	
+
 	grunt.registerTask('default', ['build', 'watch']);
 
 	grunt.registerTask('abc', ['gitTag:release']);
