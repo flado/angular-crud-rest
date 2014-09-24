@@ -32,6 +32,14 @@
             scope.searchFilter = {};
 
             scope.gridOptions = scope.$eval(attrs.gridOptions);
+            for(var i=0; i < scope.gridOptions.columnDefs.length; i++) {
+                var col = scope.gridOptions.columnDefs[i];
+                if (col.sortable === undefined) {
+                    col.sortable = true; //by default every column is sortable
+                } else {
+                    $log.debug('# field: ', col.field, ' -> NOT SORTABLE');
+                }
+            }
 
             if (!scope.gridOptions.baseUrl) {
                 scope.gridOptions.baseUrl = 'api';
@@ -275,18 +283,52 @@
                 return valid;
             };
 
-            scope.setViewOrderBy = function (field) {
-                $log.debug('>> setViewOrderBy: ', field);
-
+            scope.setViewOrderBy = function (col) {
+                var field = col.field;
+                $log.debug('>> setViewOrderBy: ', field, ' >> scope.orderBy: ', scope.orderBy);
                 for(var i=0; i < scope.objects.length; i++) {
                     scope.objects[i].$animated = '';
                 }
 
                 var asc = scope.viewOrderBy.field === field ? !(scope.viewOrderBy.sort == 'asc') : true;
                 scope.viewOrderBy = { field: field, sort: asc ? 'asc' : 'desc' };
+                //scope.viewOrderBy.viewOrdering = true;
+                scope.orderBy.length = 0;
+                scope.orderBy.push(scope.viewOrderBy);
+
+
+                /*var updated = false;
+                for(var i=0; i < scope.orderBy.length; i++) {
+                    $log.debug('###### i=' + i, scope.orderBy[i], ' ## VS ## ', scope.viewOrderBy, ' Equals ? ', (scope.orderBy[i].field === scope.viewOrderBy.field));
+                    if (scope.orderBy[i].field === scope.viewOrderBy.field) {
+                        $log.debug('REPLACE: ', scope.orderBy[i], ' WITH: ', scope.viewOrderBy);
+                        scope.orderBy[i] = scope.viewOrderBy;
+                        updated = true;
+                        break;
+                    } else if (scope.orderBy[i].viewOrdering) {
+                        scope.orderBy.splice(i, 1);//remove existing field from criteria
+                        i--;
+                    }
+                }
+                if (!updated) {
+                    $log.debug('PUSH: ',  scope.viewOrderBy);
+                    scope.orderBy.push(scope.viewOrderBy);
+                }
+*/
                 $log.debug('>> setViewOrderBy - scope.viewOrderBy: ', scope.viewOrderBy);
+                $log.debug('>> setViewOrderBy - scope.orderBy: ', scope.orderBy);
+                //get data sorted by new field
+                scope.getData(function () {
+                    scope.loading = false;
+                });
             };
 
+            scope.refresh = function() {
+                scope.getData(function () {
+                    scope.loading = false;
+                });
+            };
+            
             scope.hasError = function(formField, validation) {
               $log.debug('> hasError -> formField: ', formField);
               var error = false;

@@ -6,7 +6,8 @@
         <link href='bower_components/toastr/toastr.min.css' rel='stylesheet' type='text/css'>
         <link href='bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' type='text/css'>        
         <link href='bower_components/animate.css/animate.min.css' rel='stylesheet' type='text/css'>        
-        <link href='bower_components/angular-crud-rest/crud-grid.css' rel='stylesheet' type='text/css'><!-- grid CSS must be defined after Bootstrap css -->
+
+        <link href='dist/crud-grid.css' rel='stylesheet' type='text/css'><!-- grid CSS must be defined after Bootstrap css -->
 
         <script src="bower_components/jquery/jquery.min.js"></script>
         <script src="bower_components/toastr/toastr.min.js"></script> <!-- optional -->
@@ -26,7 +27,7 @@
 
         </style>
 
-        <script src="bower_components/angular-crud-rest/crud-grid.js"></script>
+        <script src="dist/crud-grid.js"></script>
 
         <script>          
 
@@ -103,13 +104,13 @@
                     baseUrl: 'api',
                     resourceName: 'stream',
                     columnDefs: [
-                        {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true},
+                        {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true, sortable: false},
                         {field: 'code', displayName: 'Stream Number', width:'col-md-2', searchable: true, required: true, validPattern: '/^[0-9]{1,10}$/' },
                         {field: 'desc', displayName: 'Description', searchable: true, required: true, validPattern: '/^[_ \'0-9A-Za-z/]{1,50}$/' }
                     ],
                     orderBy: [{ field: 'id', sort: 'asc' }],
                     searchFilterUrl: '/findByCodeOrDesc',
-                    itemsPerPage: 5 }"></div>
+                    itemsPerPage: 2 }"></div>
             </div>
         </div>
 
