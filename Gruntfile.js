@@ -5,11 +5,7 @@ module.exports = function(grunt) {
 		// Metadata.
 		pkg: grunt.file.readJSON('package.json'),
 
-		banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-			'<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-			'* Copyright (c) <%= pkg.author %> <%= grunt.template.today("yyyy") %>;' +
-			' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+
 
 		config: {
 			temp: './temp',
@@ -29,46 +25,45 @@ module.exports = function(grunt) {
 			},
 			temp: {
 				src: ['<%= config.temp %>']
+			},
+			deploy: {
+				src: ['<%= config.server %>/dist', '<%= config.server %>/bower_components']
 			}
 		},
 
 	    copy: {
 	    	deploy: {
 	    		files: [
-	    			{ expand: true, src: ['<%= config.dist %>/*'], dest: '<%= config.server %>'},
-	    			{ expand:true, src: ['./index.html'], dest: '<%= config.server %>'},
-	    			{ expand:true, src: ['./bower_components/**/*'], dest: '<%= config.server %>'}
-	    		]
+	    			{ expand: true, src: ['<%= config.dist %>/*', './index.html', './bower_components/**/*' ], dest: '<%= config.server %>'} ]
 	    	},
-	    	index: {
+	    	deploy_index: {
+	    		files: [ { expand:true, src: ['./index.html'], dest: '<%= config.server %>'} ]
+	    	},	    	
+	    	licenses: {
 				files: [
-	    			{ expand:true, src: ['./index.html'], dest: '<%= config.dist %>'}
+	    			{ expand:true, src: ['./LICENSE-MIT'], dest: '<%= config.dist %>'}
 	    		]
 	    	}
 	    },
 
 	    // Task configuration.
 	    concat: {
+			options: {
+		        banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+						'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+						'<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+						'* Copyright (c) <%= pkg.author %> <%= grunt.template.today("yyyy") %>;' +
+						' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+	        	stripBanners: true
+		    },
 	    	js: {
-	    		options: {
-		        	banner: '<%= banner %>',
-		        	stripBanners: true
-		      	},
-		      	dist: {
-		        	src: ['<%= config.temp %>/<%= pkg.name %>.html.js', '<%= config.js %>'],
-		        	dest: '<%= config.dist %>/<%= pkg.name %>.js'
-		      	}
+		        src: ['<%= config.temp %>/<%= pkg.name %>.html.js', '<%= config.js %>'],
+		        dest: '<%= config.dist %>/<%= pkg.name %>.js'
 	    	},
 	    	css: {
-				options: {
-		        	banner: '<%= banner %>',
-		        	stripBanners: true
-		      	},
-		      	dist: {
-		        	src: ['<%= config.dist %>/<%= pkg.name %>.css'],
-		        	dest: '<%= config.dist %>/<%= pkg.name %>.css'
-		      	}
-	    	}	      
+		        src: ['<%= config.dist %>/<%= pkg.name %>.css'],
+		        dest: '<%= config.dist %>/<%= pkg.name %>.css'
+	    	}
     	},
 
     	less: {
@@ -93,7 +88,7 @@ module.exports = function(grunt) {
 	      },
 	      index: {
 	        files: './index.html',
-	        tasks: ['copy:deploy']
+	        tasks: ['copy:deploy_index']
 	      }
 	    },
 
@@ -165,7 +160,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('build',
 		'Compiles all of the assets and copies the files to the build directory & deply them into java server.',
-		[  'clean:dist', 'jshint', 'less', 'html2js', 'concat', 'copy:index', 'clean:temp', 'copy:deploy']
+		[  'jshint', 'less', 'html2js', 'concat', 'copy:licenses', 'clean:temp', 'clean:deploy', 'copy:deploy']
 	);
 
 	grunt.registerTask('release-patch',
