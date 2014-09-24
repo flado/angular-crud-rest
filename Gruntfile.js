@@ -1,5 +1,41 @@
 /*global module:false*/
 module.exports = function(grunt) {
+
+	grunt.registerMultiTask("gitTag", "Creates a tag in the provided repository folder", function () {
+        var done = this.async();
+        var repoFolder = this.filesSrc[0];
+
+        var options = this.options({
+            //remote: 'origin',
+            tagName: this.options().tagName/*,
+            force: this.options().force,*/
+        });
+
+        grunt.util.async.series([
+            function (callback) {
+                grunt.log.writeln('GIT: Creating local tag \'%s\' into: \'%s\'', options.tagName, repoFolder);
+                grunt.util.spawn({ cmd: 'git', args: [ 'tag', '-a', options.tagName, '-m', options.tagMessage ], opts: { cwd: repoFolder } }, callback);
+            },            
+            function (callback) {
+                grunt.log.writeln('GIT: Add changes from:  \'%s\'', repoFolder);
+                grunt.util.spawn({ cmd: 'git', args: [ 'add', '.', '--force'], opts: { cwd: repoFolder } }, callback);
+            },
+            function (callback) {
+                grunt.log.writeln('GIT: Commit into: \'%s\'', repoFolder);
+                grunt.util.spawn({ cmd: 'git', args: [ 'commit', '-m', '--force', options.commitMessage ], opts: { cwd: repoFolder } }, callback);
+            } /*,
+            function (callback) {
+                grunt.log.writeln('Pushing tag \'%s\' to \'%s\' remote', options.tag, options.remote);
+                var args = [ 'push', options.remote, '--tags' ];
+
+                if (options.force) {
+                    args.push('--force');
+                }
+                grunt.util.spawn({ cmd: 'git', args: args, opts: { cwd: repoFolder } }, callback);
+            },*/
+        ], done);
+    });
+
 	// Project configuration.
 	grunt.initConfig({
 		// Metadata.
@@ -109,19 +145,59 @@ module.exports = function(grunt) {
 
 		bump: {
 		    options: {
-		      files: ['package.json', './dist/bower.json'],
-		      updateConfigs: ['pkg'],
-		      commit: true,
-		      commitMessage: 'Release v%VERSION%',
-		      commitFiles: ['-a'],
-		      createTag: true,
-		      tagName: 'v%VERSION%',
-		      tagMessage: 'Version %VERSION%',
-		      push: false,
-		      pushTo: 'upstream',
-		      gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
+				files: ['package.json', './dist/bower.json'],
+				updateConfigs: ['pkg'],
+				commit: true,
+				commitMessage: 'Release v%VERSION%',
+				commitFiles: ['-a'],
+				createTag: false,
+				//tagName: 'v%VERSION%',
+				//tagMessage: 'Version %VERSION%',
+				push: false,
+				//pushTo: 'upstream',
+				//gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
 		    }
 	  	},
+
+	  	gitTag: {
+	  		release: {
+	  			options: {
+	  				tagName: '<%= pkg.version %>',
+	  				messageMessage: 'Version <%= pkg.version %>',
+	  				commitMessage: 'Release <%= pkg.version %>'
+	  			},
+	  			src: './dist'
+	  		}
+	  	},
+
+/*
+	  	gittag: {
+		    dist: {
+		      options: {
+		        tag: 'v%VERSION%',
+                message: 'Version %VERSION%',
+		      }
+		    }
+		  },
+
+	  	gitcommit: {
+		    dist: {
+		      options: {
+		        // Target-specific options go here.
+		         message: 'Release v%VERSION%',
+		      },
+		      files: {
+		          // Specify the files you want to commit
+		          src: ['./dist/*']
+		      }
+		    }
+		},*/
+
+		/*execute: {
+	        release: {
+	            src: ['./dist/Gruntfile.js']
+	        }
+    	}*/
 
 	    jshint: {
 	      options: {
@@ -157,6 +233,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-bower');
 	grunt.loadNpmTasks('grunt-bump');
+	//grunt.loadNpmTasks('grunt-git');
+	// grunt.loadNpmTasks('grunt-execute');
+
 
 	grunt.registerTask('build',
 		'Compiles all of the assets and copies the files to the build directory & deply them into java server.',
@@ -165,7 +244,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('release-patch',
 		'Build and generate new release patch version',
-		[ 'bump-only:patch', 'build', 'bump-commit' ]
+		[ 'bump-only:patch', 'build', 'bump-commit', 'gitTag:release' ]
 	);
 
 	grunt.registerTask('release-minor',
@@ -179,5 +258,7 @@ module.exports = function(grunt) {
 	);
 	
 	grunt.registerTask('default', ['build', 'watch']);
+
+	grunt.registerTask('abc', ['gitTag:release']);
 
 };

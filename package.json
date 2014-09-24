@@ -1,6 +1,6 @@
 {
   "name": "crud-grid",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Angular grid for Spring Data REST backend",
   "main": "index.js",
   "homepage": "https://github.com/flado/angular-crud-rest",
@@ -23,6 +23,8 @@
     "grunt-html2js": "^0.2.8",
     "grunt-contrib-copy": "^0.5.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-bump": "0.0.15"
+    "grunt-bump": "0.0.15",
+    "grunt-git": "^0.2.14",
+    "grunt-execute": "^0.2.2"
   }
 }
