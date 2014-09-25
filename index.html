@@ -2,10 +2,10 @@
 <html>
     <head>
         <title>angular-crud-grid</title>
-        
+
         <link href='bower_components/toastr/toastr.min.css' rel='stylesheet' type='text/css'>
-        <link href='bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' type='text/css'>        
-        <link href='bower_components/animate.css/animate.min.css' rel='stylesheet' type='text/css'>        
+        <link href='bower_components/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+        <link href='bower_components/animate.css/animate.min.css' rel='stylesheet' type='text/css'>
 
         <link href='dist/crud-grid.css' rel='stylesheet' type='text/css'><!-- grid CSS must be defined after Bootstrap css -->
 
@@ -29,7 +29,7 @@
 
         <script src="dist/crud-grid.js"></script>
 
-        <script>          
+        <script>
 
             angular.module('demo', ['angular.crud.grid', 'ui.bootstrap']) // ui.bootstrap is MANDATORY dependency for crud grid
 
@@ -71,8 +71,12 @@
                             }
                         } else if (operation == "FORM_INVALID") {
                             toastr.warning('Invalid input! Please check again and complete highlighted fields', "Warning");
-                        } else throw new Error('unknown opration type', result);
-
+                        } else if (status == 404 && operation == "LIST") {
+                            toastr.warning('Operation was not found on server!', "Warning");
+                        } else {
+                            toastr.error('Unexpected ERROR', "Error");
+                            throw new Error('unexpected error: operation=' + operation + ' status=' + status);
+                        }
                     }
                 };
             });
@@ -82,20 +86,20 @@
 
     <body ng-app="demo">
 
-       
-    <div class="container">        
+
+    <div class="container">
 
         <!-- Static navbar -->
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">      
-            <div class="navbar-header">          
-                <div class="navbar-brand ">&lt; angular-crud-grid &gt; built for <a href="http://projects.spring.io/spring-data-rest/">Spring Data REST</a> backend - DEMO</div>                                        
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="navbar-header">
+                <div class="navbar-brand ">&lt; angular-crud-rest &gt; built for <a href="http://projects.spring.io/spring-data-rest/">Spring Data REST</a> backend - DEMO</div>
 
-                <a href="https://github.com/flado/angular-crud-grid">
+                <a href="https://github.com/flado/angular-crud-rest">
                 <img style="position: absolute; top: 0px; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub">
                 </a>
-            </div>    
+            </div>
         </div>
-        
+
         <div ng-controller="DemoController1">
             <div ng-form="myForm">
                 <div crud-grid read-only = "gridReadOnly"
@@ -105,12 +109,24 @@
                     resourceName: 'stream',
                     columnDefs: [
                         {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true, sortable: false},
-                        {field: 'code', displayName: 'Stream Number', width:'col-md-2', searchable: true, required: true, validPattern: '/^[0-9]{1,10}$/' },
-                        {field: 'desc', displayName: 'Description', searchable: true, required: true, validPattern: '/^[_ \'0-9A-Za-z/]{1,50}$/' }
+                        {field: 'code', displayName: 'Stream Number', width:'col-md-2', required: true, validPattern: '/^[0-9]{1,10}$/'},
+                        {field: 'desc', displayName: 'Description', required: true, validPattern: '/^[_ \'0-9%A-Za-z/]{1,50}$/', type: 'S' }
                     ],
                     orderBy: [{ field: 'id', sort: 'asc' }],
-                    searchFilterUrl: '/findByCodeOrDesc',
-                    itemsPerPage: 2 }"></div>
+                    searchConfig: {
+                        fields: ['code', 'desc'],
+                        filters: [{
+                                logic: 'AND',                            
+                                url: '/findByCodeAndDescLike'
+                            },{
+                                logic: 'OR',
+                                url: '/findByCodeOrDescLike',
+                                default: true
+                            }
+                        ]
+                    },  
+                    itemsPerPage: 2 }">
+                </div>
             </div>
         </div>
 

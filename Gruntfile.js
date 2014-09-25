@@ -66,27 +66,28 @@ module.exports = function(grunt) {
 			},
 			temp: {
 				src: ['<%= config.temp %>']
-			},
+			}/*,
 			deploy: {
 				src: ['<%= config.server %>/dist', '<%= config.server %>/bower_components']
-			}
+			}*/
 		},
 
-	    copy: {
-	    	deploy: {
-	    		files: [
-	    		
-	    			{ expand: true, src: ['<%= config.dist %>/*', './index.html', './bower_components/**/*'], dest: '<%= config.server %>'} ]
-	    	},
+	    copy: {	    	
 	    	deploy_index: {
 	    		files: [ { expand:true, src: ['./index.html'], dest: '<%= config.server %>'} ]
-	    	},
-	    	licenses: {
-				files: [
-	    			{ expand:true, src: ['./LICENSE-MIT'], dest: '<%= config.dist %>'}
-	    		]
 	    	}
 	    },
+
+	    sync: {
+			main: {
+			    files: [
+			      {src: ['dist/**', 'bower_components/**'], dest: '<%= config.server %>' } // includes files in path and its subdirs		      
+			    ],
+			    verbose: true,
+			    //pretend: true, // Don't do any disk operations - just write log		    
+			    updateAndDelete: false // Remove all files from dest that are not found in src
+		  	}
+		},
 
 	    // Task configuration.
 	    concat: {
@@ -210,13 +211,12 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-bower');
 	grunt.loadNpmTasks('grunt-bump');
-	//grunt.loadNpmTasks('grunt-git');
-	// grunt.loadNpmTasks('grunt-execute');
+	grunt.loadNpmTasks('grunt-sync');	
 
 
 	grunt.registerTask('build',
 		'Compiles all of the assets and copies the files to the build directory & deply them into java server.',
-		[  'jshint', 'less', 'html2js', 'concat', 'copy:licenses', 'clean:temp', 'clean:deploy', 'copy:deploy']
+		[  'jshint', 'less', 'html2js', 'concat', 'clean:temp', 'sync']
 	);
 
 	grunt.registerTask('release-patch',
@@ -234,8 +234,6 @@ module.exports = function(grunt) {
 		[ 'bump-only:major', 'build', 'bump-commit' ]
 	);
 
-	grunt.registerTask('default', ['build', 'watch']);
-
-	grunt.registerTask('abc', ['gitTag:release']);
+	grunt.registerTask('default', ['build', 'watch']);	
 
 };

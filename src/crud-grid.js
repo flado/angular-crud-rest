@@ -1,6 +1,32 @@
 ﻿angular.module('angular.crud.grid')
 
-.directive('crudGrid', function ($log, $http, $injector, $timeout) {
+.filter('isEmpty', function () {
+    var bar;
+    return function (obj) {
+        for (bar in obj) {
+            if (obj.hasOwnProperty(bar)) {
+                return false;
+            }
+        }
+        return true;
+    };
+})
+
+.filter('allPropertiesEmpty', function () {
+    var bar;
+    return function (obj) {
+        for (bar in obj) {
+            if (obj.hasOwnProperty(bar)) {
+                if (obj[bar] && obj[bar].trim().length > 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+})
+
+.directive('crudGrid', function ($log, $http, $injector, $timeout, $filter) {
     return {
         restrict: 'A',
         replace: false,
@@ -16,8 +42,6 @@
         link: function(scope, elem, attrs, formCtrl) {
             $log.debug('>>>>> link <<<<<<<<<<', formCtrl);
 
-
-
             if (toastr) {
                 toastr.options.closeButton = true;
             } else {
@@ -29,11 +53,41 @@
             scope.editMode = false;
             scope.previous = "<< Previous";
             scope.next = "Next >>";
-            scope.searchFilter = {};
 
+            scope.colDefMap = {}; //key: field name
+
+            scope.searchFilter = {};
             scope.gridOptions = scope.$eval(attrs.gridOptions);
+
+            //TODO: validate gridOptions mandatory properties & log default values 
+            
+            scope.hasSearchPanel = scope.gridOptions.searchConfig;
+            //validate searchConfig
+            if (scope.hasSearchPanel) {
+                var cfg = scope.gridOptions.searchConfig;
+                if (cfg.fields.length == 0) {
+                    throw new Error("searchConfig.fields is missing");
+                }
+                if (cfg.fields.length == 1) {
+                    if (cfg.filters.length != 1) {
+                        throw new Error("searchConfig.filters should define a single URL for field: " + cfg.fields[0]);
+                    }
+                }
+                if (cfg.fields.length > 1) {
+                    if (cfg.filters.length != 2) {
+                        throw new Error("searchConfig.filters should specify both AND + OR filters");
+                    }
+                }
+            }
+
             for(var i=0; i < scope.gridOptions.columnDefs.length; i++) {
                 var col = scope.gridOptions.columnDefs[i];
+                //derive if col is searchable
+                if (scope.hasSearchPanel && scope.gridOptions.searchConfig.fields.indexOf(col.field) > -1) {
+                    col.searchable = true;
+                    scope.searchFilter[col.field] = '';//empty string
+                }
+                scope.colDefMap[col.field] = col;
                 if (col.sortable === undefined) {
                     col.sortable = true; //by default every column is sortable
                 } else {
@@ -47,9 +101,6 @@
 
             scope.orderBy =  scope.gridOptions.orderBy ? scope.gridOptions.orderBy : [];
             scope.viewOrderBy =  [];
-            scope.searchFilter = scope.gridOptions.searchFilter;
-            scope.searchFilterUrl = scope.gridOptions.searchFilterUrl;
-
             //pagination.maxSize = 10; //number of visible page buttons
             scope.pagination = {itemsPerPage : scope.gridOptions.itemsPerPage};
 
@@ -62,25 +113,13 @@
                 return result;
             };
 
-            scope.searchRequired = function() {
-                $log.debug('searchRequired: ', scope.gridOptions.columnDefs);
-                for(var i=0; i < scope.gridOptions.columnDefs.length; i++) {
-                    col = scope.gridOptions.columnDefs[i];
-                    //$log.debug('searchRequired col= ', col);
-                    if (col.searchable) {
-                        return true;
-                    }
-                }
-                return false;
-            }();
+            scope.searchLogic = { and: false }; //default search logic is OR if none specified in config
 
             scope.$watch('pagination.currentPage', function(oldValue, newValue){
                 $log.debug(">> pagination.currentPage: ", oldValue, ' -> ', newValue); //trigger to get new data here
-                //if (oldValue !== newValue) {
-                    scope.getData(function () {
-                        scope.loading = false;
-                    });
-                //}
+                scope.getData(function () {
+                    scope.loading = false;
+                });
             });
             //set start page index
             scope.pagination.currentPage = 1;
@@ -96,26 +135,39 @@
                 }
             };
 
+
             scope.getData = function (cb) {
                 $log.debug('>> getData <<');
                 scope.loading = true;
-                var useSearch = false;
+                var hasSearchFilter = false;
                 var queryParams = {page: scope.pagination.currentPage-1, size: scope.pagination.itemsPerPage}; //Spring Data pagination starts at 0 index
-                for (var col in scope.searchFilter) {
-                    if (scope.searchFilter.hasOwnProperty(col)) {
-                        if (scope.searchFilter[col].trim().length > 0) {
-                            queryParams[col] = scope.searchFilter[col].trim();
-                            useSearch = true;
+
+                //check if serachFilter has all props empty
+                hasSearchFilter = !$filter('allPropertiesEmpty')(scope.searchFilter);
+                var searchPostfix = '';
+
+                if (hasSearchFilter) {
+                    for (var field in scope.searchFilter) {
+                        if (scope.searchFilter.hasOwnProperty(field)) {
+                            if (scope.searchFilter[field].trim().length > 0) {
+                                queryParams[field] = scope.searchFilter[field].trim();
+                            } else if (scope.colDefMap[field].type  == 'S'){ //default search value for Strings
+                                queryParams[field] = '%';
+                            }
                         }
                     }
-                }
-                var searchPostfix = '';
-                if (useSearch) {
-                    if (!scope.searchFilterUrl) {
-                        throw new Error("searchFilterUrl config not found");
+                    var filters = scope.gridOptions.searchConfig.filters;
+                    if (filters.length > 1) {
+                        for(var i=0; i < filters.length; i++) {
+                            if ((filters[i].logic == "AND" && scope.searchLogic.and) || (filters[i].logic == "OR" && !scope.searchLogic.and) ) {
+                                scope.searchFilterUrl = filters[i].url;
+                                break;
+                            }
+                        }
                     } else {
-                        searchPostfix = '/search' + scope.searchFilterUrl; //if search URL provided in config
+                        scope.searchFilterUrl = filters[0].url;
                     }
+                    searchPostfix = '/search' + scope.searchFilterUrl;
                 }
 
                 //set sort order using config
@@ -140,6 +192,7 @@
                         if (cb) cb();
                     })
                     .error(function(data, status) {
+                        if (cb) cb();
                         scope.notificationService.notify('LIST', status, data);
                     });
             };
@@ -282,7 +335,7 @@
                 }
                 return valid;
             };
-            
+
 
             scope.setViewOrderBy = function (col) {
                 var field = col.field;
@@ -290,34 +343,11 @@
                 for(var i=0; i < scope.objects.length; i++) {
                     scope.objects[i].$animated = '';
                 }
-
                 var asc = scope.viewOrderBy.field === field ? !(scope.viewOrderBy.sort == 'asc') : true;
                 scope.viewOrderBy = { field: field, sort: asc ? 'asc' : 'desc' };
                 //scope.viewOrderBy.viewOrdering = true;
                 scope.orderBy.length = 0;
                 scope.orderBy.push(scope.viewOrderBy);
-
-
-                /*var updated = false;
-                for(var i=0; i < scope.orderBy.length; i++) {
-                    $log.debug('###### i=' + i, scope.orderBy[i], ' ## VS ## ', scope.viewOrderBy, ' Equals ? ', (scope.orderBy[i].field === scope.viewOrderBy.field));
-                    if (scope.orderBy[i].field === scope.viewOrderBy.field) {
-                        $log.debug('REPLACE: ', scope.orderBy[i], ' WITH: ', scope.viewOrderBy);
-                        scope.orderBy[i] = scope.viewOrderBy;
-                        updated = true;
-                        break;
-                    } else if (scope.orderBy[i].viewOrdering) {
-                        scope.orderBy.splice(i, 1);//remove existing field from criteria
-                        i--;
-                    }
-                }
-                if (!updated) {
-                    $log.debug('PUSH: ',  scope.viewOrderBy);
-                    scope.orderBy.push(scope.viewOrderBy);
-                }
-*/
-                $log.debug('>> setViewOrderBy - scope.viewOrderBy: ', scope.viewOrderBy);
-                $log.debug('>> setViewOrderBy - scope.orderBy: ', scope.orderBy);
                 //get data sorted by new field
                 scope.getData(function () {
                     scope.loading = false;
@@ -325,6 +355,13 @@
             };
 
             scope.refresh = function() {
+                scope.getData(function () {
+                    scope.loading = false;
+                });
+            };
+
+            scope.search = function() {
+                $log.debug('## search: ', scope.searchFilter);
                 scope.getData(function () {
                     scope.loading = false;
                 });

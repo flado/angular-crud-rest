@@ -26,5 +26,8 @@
     "grunt-bump": "0.0.15",
     "grunt-git": "^0.2.14",
     "grunt-execute": "^0.2.2"
+  },
+  "dependencies": {
+    "grunt-sync": "^0.2.0"
   }
 }
