@@ -38,7 +38,7 @@
 <table class="crud-grid table table-hover table-bordered table-condensed ">
     <thead>
         <tr class="navigation">
-            <th colspan="3">
+            <th colspan="{{headerColSpan}}">
                 <div ng-show="loading"><i class="glyphicon glyphicon-refresh spin"></i> Please wait while loading data...{{se}}<br></div>
                 <div ng-show="!(searchFilter | allPropertiesEmpty)">
                     <span class="glyphicon glyphicon-search"></span> : <span ng-show="searchLogic.and">AND</span><span ng-show="!searchLogic.and">OR</span>
@@ -46,12 +46,11 @@
                         <li ng-if="col.searchable">{{col.displayName}} = {{ searchFilter[col.field] }}</li>
                     </div>
                 </div>
-            </th>
-
-            <th colspan="{{gridOptions.columnDefs.length + 1}}">
-                <pagination total-items="pagination.totalItems"
-                    page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
-                    max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>
+                <div ng-show="!loading" >
+                    <pagination total-items="pagination.totalItems"
+                        page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
+                        max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>
+                </div>
             </th>
         </tr>
         <tr class="header">
@@ -89,7 +88,10 @@
         <td ng-repeat="col in gridOptions.columnDefs" >
             <span ng-if="col.readOnly"></span>
             <span ng-if="!col.readOnly">
-                <input type="text" dynamic-name="col.field" class="form-control" placeholder="{{col.displayName}}" ng-class="{'has-error': hasError(addForm[col.field]) }" ng-model="object[col.field]" ng-required="{{col.required}}" ng-pattern="{{col.validPattern}}" />
+                <input type="text" dynamic-name="col.field"
+                    class="form-control" placeholder="{{col.displayName}}"
+                    ng-class="{'has-error': hasError(addForm[col.field]) }"
+                    ng-model="object[col.field]" ng-required="{{col.required}}" ng-pattern="{{col.validPattern}}" />
             </span>
         </td>
     </tr>
@@ -117,13 +119,19 @@
                 </div>
             </div>
         </td>
+
         <!-- Object details -->
 
         <td ng-repeat="col in gridOptions.columnDefs">
             <span ng-if="col.readOnly" >{{object[col.field]}}</span>
             <span ng-if="!col.readOnly" ng-show="object.$edit == null" ng-class="object.$animated">{{object[col.field]}}</span>
             <ng-form name="editForm" ng-if="editMode">
-                <input class="form-control" ng-if="isInputForm(object, col)" ng-model="object.$edit[col.field]" ng-required="{{col.required}}" ng-pattern="{{col.validPattern}}" model-change-blur />
+                <input class="form-control" ng-if="isInputForm(object, col)"
+                    ng-model="object.$edit[col.field]"
+                    ng-required="{{col.required}}"
+                    ng-init="object.$edit['$old_' + col.field]=object.$edit[col.field]"
+                    ng-change="valueChanged(col.field, object.$edit)"
+                    ng-pattern="{{col.validPattern}}" model-change-blur />
             </ng-form>
         </td>
     </tr>
@@ -134,13 +142,14 @@
                 <i class="glyphicon glyphicon-refresh spin" ng-show="loading"></i> Refresh
             </button>
         </td>
-        <td colspan="2">
-            <span><i class="glyphicon glyphicon-hand-right"></i> Total Items: {{pagination.totalItems}}</span>
-        </td>
-        <td colspan="{{gridOptions.columnDefs.length+1}}">
+        <td colspan="{{headerColSpan}}">
+            <span ng-show="!loading" class="pull-left"><i class="glyphicon glyphicon-hand-right"></i> Total Items: {{pagination.totalItems}}</span>
+            <span ng-show="!loading" class="pull-right">
                 <pagination total-items="pagination.totalItems"
-                    page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
-                    max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>
+                        page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
+                        max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>
+            </div>
+        </td>
 
         </td>
     </tr>

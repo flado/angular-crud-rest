@@ -7,7 +7,6 @@ package com.flado.data.dao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -31,6 +30,8 @@ public interface StreamDAO extends JpaRepository<StreamEntity, Long> {
   Page<StreamEntity> findByCodeOrDescLike(final @Param("code") Integer code, final @Param("desc") String desc, Pageable page);
   
   Page<StreamEntity> findByCodeAndDescLike(final @Param("code") Integer code, final @Param("desc") String desc, Pageable page);
+  
+  List<StreamEntity> findByCode(final @Param("code") Integer code);
 
 /*  @Query("select f from Foo f where f.name like %?1% or f.alias like %?1% or ...")
   public List<Foo> findByAnyColumnContaining(String text, Pageable pageable);*/

@@ -11,7 +11,7 @@
 
         <script src="bower_components/jquery/jquery.min.js"></script>
         <script src="bower_components/toastr/toastr.min.js"></script> <!-- optional -->
-        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
         <script src="bower_components/angular-animate/angular-animate.min.js"></script>
         <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
@@ -33,15 +33,63 @@
 
             angular.module('demo', ['angular.crud.grid', 'ui.bootstrap']) // ui.bootstrap is MANDATORY dependency for crud grid
 
-            .controller('DemoController1', function($scope,$log, DemoNotificationService) {
+            .controller('DemoController1', function($scope,$log, DemoNotificationService, ServerValidationService) {
                 $log.debug('>> DemoController1 <<');
                 $scope.gridReadOnly = false; //may be determine using an external Authorization service
                 $scope.notificationService = DemoNotificationService;
+                $scope.serverValidationService = ServerValidationService;
             })
 
             .controller('DemoController2', function($scope) {
 
             })
+
+            .factory('ServerValidationService' , function($log, $q, $http, DemoNotificationService) {
+                var result = { valid: false };
+                return {
+                    validateAction: function(operation, object, resourceName) {
+                        var deferred = $q.defer();
+
+                        if (operation == 'ADD' || operation == 'UPDATE') {
+
+                            if (operation == 'UPDATE') {                                
+                                if (object.code == object.$old_code) {//if PK was not updated
+                                    result.valid = true;
+                                    deferred.resolve(result);
+                                }
+                            }
+
+                            $http({ method: 'GET', url: 'api/' + resourceName + '/search/findByCode', params: { code: object.code} })
+                                .success(function (data, status) {
+                                    $log.debug('>> successGetCallback:', data);
+                                    var objects = [];
+                                    if (data._embedded) {
+                                        objects = data._embedded[resourceName];
+                                        if (objects.length > 0) {
+                                            result.valid = false;
+                                            result.message = 'Another stream with code: ' + object.code + ' already exists';
+                                        } else {
+                                            result.valid = true;
+                                        }                                        
+                                    } else { //no records found
+                                        result.valid = true;                                        
+                                    }
+                                    //resolve promise
+                                    deferred.resolve(result);
+                                })
+                                .error(function(data, status) {
+                                    DemoNotificationService.notify('HTTP_ERROR', status, data);
+                                    deferred.reject('HTTP ERROR');
+                                });
+                        } else {
+                            throw new Error('server side validation not implemented for operation: ' + operation);
+                        }
+                        //return the promise
+                        return deferred.promise;
+                    }
+                }
+            })
+
             .factory('DemoNotificationService', function ($log) {
                 toastr.options.closeButton = true;
                 return {
@@ -50,6 +98,12 @@
                         if (operation == 'ADD') {
                             if (status == 201) {
                                 toastr.success('Record added OK', "Success");
+                            } else if (status == 409) {
+                                if (data.$serverValidationMessage) {
+                                    toastr.error(data.$serverValidationMessage, "Error");
+                                } else {
+                                    toastr.error('Another record with the same code already exists', "Error");
+                                }
                             } else {
                                 toastr.error('Error adding record', "Error");
                             }
@@ -57,7 +111,11 @@
                             if (status == 204) {
                                 toastr.success('Record updated', "Success");
                             } else if (status == 409) {
-                                toastr.info('Could not update this record because it is being used in some existing TPP rules', "Info");
+                                if (data.$serverValidationMessage) {
+                                    toastr.error(data.$serverValidationMessage, "Error");
+                                } else {
+                                    toastr.info('Could not update this record because there is a conflict', "Info");
+                                }
                             } else {
                                 toastr.error('Error updating record', "Error");
                             }
@@ -104,19 +162,20 @@
             <div ng-form="myForm">
                 <div crud-grid read-only = "gridReadOnly"
                 notification-service = "notificationService"
+                server-validation-service = "serverValidationService"
                 grid-options="{
                     baseUrl: 'api',
                     resourceName: 'stream',
                     columnDefs: [
                         {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true, sortable: false},
                         {field: 'code', displayName: 'Stream Number', width:'col-md-2', required: true, validPattern: '/^[0-9]{1,10}$/'},
-                        {field: 'desc', displayName: 'Description', required: true, validPattern: '/^[_ \'0-9%A-Za-z/]{1,50}$/', type: 'S' }
+                        {field: 'desc', displayName: 'Description', width:'col-md-8', required: true, validPattern: '/^[_ \'0-9%A-Za-z/]{1,50}$/', type: 'S' }
                     ],
                     orderBy: [{ field: 'id', sort: 'asc' }],
                     searchConfig: {
                         fields: ['code', 'desc'],
                         filters: [{
-                                logic: 'AND',                            
+                                logic: 'AND',
                                 url: '/findByCodeAndDescLike'
                             },{
                                 logic: 'OR',
@@ -124,7 +183,7 @@
                                 default: true
                             }
                         ]
-                    },  
+                    },
                     itemsPerPage: 2 }">
                 </div>
             </div>

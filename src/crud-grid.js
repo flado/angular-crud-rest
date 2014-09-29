@@ -33,6 +33,7 @@
         scope: {
             readOnly: '=',
             notificationService: '=',
+            serverValidationService: '=',
             baseUrl: '='
         },
 
@@ -54,13 +55,21 @@
             scope.previous = "<< Previous";
             scope.next = "Next >>";
 
+
+
             scope.colDefMap = {}; //key: field name
 
             scope.searchFilter = {};
             scope.gridOptions = scope.$eval(attrs.gridOptions);
 
-            //TODO: validate gridOptions mandatory properties & log default values 
-            
+            if (scope.readOnly) {
+                scope.headerColSpan = scope.gridOptions.columnDefs.length;
+            } else {
+                scope.headerColSpan = scope.gridOptions.columnDefs.length + 1;
+            }
+
+            //TODO: validate gridOptions mandatory properties & log default values
+
             scope.hasSearchPanel = scope.gridOptions.searchConfig;
             //validate searchConfig
             if (scope.hasSearchPanel) {
@@ -226,21 +235,46 @@
                 $timeout(function() {
                     // TO make sure the validation cycle has completed before going to save
                     if (isFormValid()) { //only one addForm per page
-                        $http({ method: 'POST', url: scope.gridOptions.baseUrl + '/' + scope.gridOptions.resourceName, data: scope.object})
-                            .success(function(data, status, headers, config) {
-                                $log.debug('successPostCallback: ', data);
-                                scope.notificationService.notify('ADD', status, data);
-                                scope.getData(function () {
-                                    scope.loading = false;
-                                    scope.toggleAddMode();
-                                });
-                            })
-                           .error(function(data, status) {
-                                scope.notificationService.notify('ADD', status, data);
-                            });
+
+                        //check for validation service
+                        if (scope.serverValidationService) {
+                            //validateAction returns promise
+                            scope.serverValidationService.validateAction('ADD', scope.object, scope.gridOptions.resourceName).then(
+                                //promise ok
+                                function(result){
+                                    if (!result.valid) {
+                                        scope.object.$serverValidationMessage = result.message;
+                                        scope.notificationService.notify('ADD', 409, scope.object);
+                                    } else {
+                                        doInsert(scope.object, $http);
+                                    }
+                                },
+                                //promise error
+                                function(reason) {
+                                    scope.notificationService.notify('ADD', 500, reason);
+                                }
+                            );
+                        } else { //no server side validation required
+                            doInsert(scope.object, $http);
+                        }
                     }
                 })
             };
+
+            var doInsert = function(insertObj, $http) {
+                $http({ method: 'POST', url: scope.gridOptions.baseUrl + '/' + scope.gridOptions.resourceName, data: insertObj})
+                .success(function(data, status, headers, config) {
+                    $log.debug('successPostCallback: ', data);
+                    scope.notificationService.notify('ADD', status, data);
+                    scope.getData(function () {
+                        scope.loading = false;
+                        scope.toggleAddMode();
+                    });
+                })
+                .error(function(data, status) {
+                    scope.notificationService.notify('ADD', status, data);
+                });
+            }
 
             scope.deleteObject = function (object) {
                 var modal = $injector.get('$modal');
@@ -248,6 +282,9 @@
                     var modalInstance = modal.open({
                         templateUrl: 'delete-confirm.tpl.html',
                         controller: function($scope, $modalInstance) {
+                            $scope.object = object;
+                            $scope.gridOptions = scope.gridOptions;
+
                             $scope.cancel = function() {
                                 $modalInstance.dismiss('cancel');
                             };
@@ -298,29 +335,54 @@
                 $timeout(function() {
                     // use $timeout tO make sure the validation cycle has completed before going to save
                     if (isFormValid()) {
-                        var cleanEditObj = cleanObject(editObj);
-                        //$http.put(editObj._links.self.href, cleanEditObj)
-                        $http({ method: 'PUT', url: editObj._links.self.href, data: cleanEditObj })
-                            .success( function(data, status) {
-                                scope.notificationService.notify('UPDATE', status, data);
-                                scope.getData(function () {
-                                    scope.loading = false;
-                                    for(var i=0; i < scope.objects.length; i++) {
-                                        if (scope.objects[i]._links.self.href == editObj._links.self.href) {
-                                            scope.objects[i].$animated = 'animated flash';
-                                        }
+
+                        if (scope.serverValidationService) {
+                            //validateAction returns promise
+                            scope.serverValidationService.validateAction('UPDATE', editObj, scope.gridOptions.resourceName).then(
+                                //promise ok
+                                function(result){
+                                    if (!result.valid) {
+                                        editObj.$serverValidationMessage = result.message;
+                                        scope.notificationService.notify('UPDATE', 409, editObj);
+                                    } else {
+                                        doUpdate(editObj, $http);
                                     }
-                                });
-                                //scope.animateObject = editObj;
-                                //object.$animated = 'animated flash';
-                            })
-                            .error(function(data, status) {
-                                scope.animateObject = undefined;
-                                scope.notificationService.notify('UPDATE', status, data);
-                            });
+                                },
+                                //promise error
+                                function(reason) {
+                                    scope.notificationService.notify('UPDATE', 500, reason);
+                                }
+                            );
+                        } else { //no server side validation required
+                            doUpdate(editObj, $http);
+                        }
                     }
                 });
             };
+
+            var doUpdate = function(editObj, $http) {
+                var cleanEditObj = cleanObject(editObj);
+                $http({ method: 'PUT', url: editObj._links.self.href, data: cleanEditObj })
+                .success( function(data, status) {
+                    scope.notificationService.notify('UPDATE', status, data);
+                    scope.getData(function () {
+                        scope.loading = false;
+                        for(var i=0; i < scope.objects.length; i++) {
+                            if (scope.objects[i]._links.self.href == editObj._links.self.href) {
+                                scope.objects[i].$animated = 'animated flash';
+                            }
+                        }
+                    });
+                })
+                .error(function(data, status) {
+                    scope.animateObject = undefined;
+                    scope.notificationService.notify('UPDATE', status, data);
+                });
+            };
+
+            scope.valueChanged = function(field, value) {
+                $log.debug('## valueChanged: ', field, value);
+            }
 
             scope.isInputForm = function(object, col) {
                 return object.$edit && !col.readOnly;

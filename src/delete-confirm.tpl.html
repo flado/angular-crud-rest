@@ -4,7 +4,10 @@
 </div> <!-- .modal-header -->
 
  <div class="modal-body"> 	
- 	Are you sure you want to delete this record?
+ 	Are you sure you want to delete this record?<br><br>
+ 	<ul>
+ 	  <li ng-repeat="col in gridOptions.columnDefs"><b>{{col.displayName}}</b> = {{object[col.field]}}</li>
+ 	</ul>
 </div> <!-- .modal-body   -->
 
 <div class="modal-footer">
