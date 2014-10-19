@@ -110,8 +110,11 @@
 
             scope.orderBy =  scope.gridOptions.orderBy ? scope.gridOptions.orderBy : [];
             scope.viewOrderBy =  [];
-            //pagination.maxSize = 10; //number of visible page buttons
-            scope.pagination = {itemsPerPage : scope.gridOptions.itemsPerPage};
+            var maxSizePagination = 10; //number of visible page buttons
+            if (scope.gridOptions.maxSize) {
+                maxSizePagination = scope.gridOptions.maxSize;
+            }
+            scope.pagination = {itemsPerPage : scope.gridOptions.itemsPerPage, maxSize: maxSizePagination};
 
             var getSortParams = function() {
                 var result = [];
