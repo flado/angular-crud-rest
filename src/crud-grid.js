@@ -70,7 +70,13 @@
 
             //TODO: validate gridOptions mandatory properties & log default values
 
-            scope.hasSearchPanel = scope.gridOptions.searchConfig;
+            if (scope.gridOptions.searchConfig) {
+                if (scope.gridOptions.searchConfig.hideSearchPanel) {
+                    scope.hasSearchPanel = false;
+                } else {
+                    scope.hasSearchPanel = true;
+                }
+            }
             //validate searchConfig
             if (scope.hasSearchPanel) {
                 var cfg = scope.gridOptions.searchConfig;
@@ -181,6 +187,14 @@
                     }
                     searchPostfix = '/search' + scope.searchFilterUrl;
                 }
+                //check fo default search filter (eg. discriminator column)
+                if (scope.gridOptions.searchConfig) {
+                    var defaultFilter = scope.gridOptions.searchConfig.defaultFilter;
+                    if (defaultFilter) {
+                        queryParams[defaultFilter.fieldName] = defaultFilter.fieldValue;
+                        searchPostfix = '/search' + defaultFilter.url;
+                    }
+                }
 
                 //set sort order using config
                 var sort = getSortParams();
@@ -238,6 +252,13 @@
                 $timeout(function() {
                     // TO make sure the validation cycle has completed before going to save
                     if (isFormValid()) { //only one addForm per page
+                        //add default values (if any)
+                        for(var i=0; i < scope.gridOptions.columnDefs.length; i++) {
+                            var col = scope.gridOptions.columnDefs[i];
+                            if (col.hide && col.defaultOnAdd) {
+                                scope.object[col.field] = col.defaultOnAdd;
+                            }
+                        }
 
                         //check for validation service
                         if (scope.serverValidationService) {

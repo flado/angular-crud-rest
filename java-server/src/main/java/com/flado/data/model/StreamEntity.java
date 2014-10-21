@@ -39,6 +39,19 @@ public class StreamEntity extends BaseEntity {
   @Column(name = "DSCR", columnDefinition = "varchar(100)", nullable = false, updatable = true)
   private String desc;
   
+  @Column(name = "TYPE", columnDefinition = "varchar(20)", nullable = false, updatable = true)
+  private String type;
+  
+  
+  
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
   @Transient    
   private Long key;
   

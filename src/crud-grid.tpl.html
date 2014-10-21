@@ -59,7 +59,7 @@
                     <span class="glyphicon glyphicon-plus"></span>
                 </div>
             </th>
-            <th class="{{col.width}}" ng-repeat="col in gridOptions.columnDefs" >
+            <th class="{{col.width}}" ng-repeat="col in gridOptions.columnDefs" ng-if="!col.hide">
                 <!-- sortable header -->
                 <div ng-if="col.sortable" ng-click="setViewOrderBy(col)">
                     {{col.displayName}}
@@ -85,8 +85,11 @@
             </div>
         </td>
         <!-- Object details in ADD mode : ['{{col.field}}'] -->
-        <td ng-repeat="col in gridOptions.columnDefs" >
-            <span ng-if="col.readOnly"></span>
+        <td ng-repeat="col in gridOptions.columnDefs" ng-if="!col.hide">
+
+            <span ng-if="col.readOnly && !col.defaultOnAdd"></span>
+            <span ng-if="col.readOnly && col.defaultOnAdd" ng-init="object[col.field]=col.defaultOnAdd">{{col.defaultOnAdd}}</span>
+            
             <span ng-if="!col.readOnly">
                 <input type="text" dynamic-name="col.field"
                     class="form-control" placeholder="{{col.displayName}}"
@@ -95,7 +98,7 @@
             </span>
         </td>
     </tr>
-    <tr ng-repeat="object in objects">
+    <tr ng-repeat="object in objects" ng-if="!col.hide">
         <!-- Edit Actions -->
         <td ng-if="!readOnly">
             <div class="btn-toolbar" ng-show="object.$edit == null">
@@ -122,7 +125,7 @@
 
         <!-- Object details -->
 
-        <td ng-repeat="col in gridOptions.columnDefs">
+        <td ng-repeat="col in gridOptions.columnDefs" ng-if="!col.hide">
             <span ng-if="col.readOnly" >{{object[col.field]}}</span>
             <span ng-if="!col.readOnly" ng-show="object.$edit == null" ng-class="object.$animated">{{object[col.field]}}</span>
             <ng-form name="editForm" ng-if="editMode">

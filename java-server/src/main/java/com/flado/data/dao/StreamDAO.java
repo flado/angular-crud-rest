@@ -32,7 +32,10 @@ public interface StreamDAO extends JpaRepository<StreamEntity, Long> {
   Page<StreamEntity> findByCodeAndDescLike(final @Param("code") Integer code, final @Param("desc") String desc, Pageable page);
   
   List<StreamEntity> findByCode(final @Param("code") Integer code);
+  
+  Page<StreamEntity> findByType(final @Param("type") String type, Pageable page);
 
 /*  @Query("select f from Foo f where f.name like %?1% or f.alias like %?1% or ...")
   public List<Foo> findByAnyColumnContaining(String text, Pageable pageable);*/
+  
 }

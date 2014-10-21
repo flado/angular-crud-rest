@@ -187,6 +187,57 @@
                     itemsPerPage: 2 }">
                 </div>
             </div>
+            <br>
+
+
+            <h3>Using default filter (discriminator column - hidden)</h3>
+            <br>
+            <div ng-form="myOtherForm">
+                <div crud-grid read-only = "gridReadOnly"
+                notification-service = "notificationService"
+                server-validation-service = "serverValidationService"
+                grid-options="{
+                    baseUrl: 'api',
+                    resourceName: 'stream',
+                    columnDefs: [
+                        {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true, sortable: false},
+                        {field: 'code', displayName: 'Stream Number', width:'col-md-2', required: true, validPattern: '/^[0-9]{1,10}$/'},
+                        {field: 'type', defaultOnAdd: 'ABC', hide: true},
+                        {field: 'desc', displayName: 'Description', width:'col-md-8', required: true, validPattern: '/^[_ \'0-9%A-Za-z/]{1,50}$/', type: 'S' }
+                    ],
+                    orderBy: [{ field: 'id', sort: 'asc' }],
+                    searchConfig: {
+                        hideSearchPanel: true,
+                        defaultFilter: {url: '/findByType', fieldName: 'type', fieldValue: 'ABC'}
+                    },
+                    itemsPerPage: 4 }">
+                </div>
+            </div>
+            <br>
+            <h3>Using default filter (discriminator column - displayed)</h3>
+            <br>
+            <div ng-form="myAnotherForm">
+                <div crud-grid read-only = "gridReadOnly"
+                notification-service = "notificationService"
+                server-validation-service = "serverValidationService"
+                grid-options="{
+                    baseUrl: 'api',
+                    resourceName: 'stream',
+                    columnDefs: [
+                        {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true, sortable: false},
+                        {field: 'code', displayName: 'Stream Number', width:'col-md-2', required: true, validPattern: '/^[0-9]{1,10}$/'},
+                        {field: 'type', displayName: 'Type', width:'col-md-2', readOnly: true, defaultOnAdd: 'ABC'},
+                        {field: 'desc', displayName: 'Description', width:'col-md-8', required: true, validPattern: '/^[_ \'0-9%A-Za-z/]{1,50}$/', type: 'S' }
+                    ],
+                    orderBy: [{ field: 'id', sort: 'asc' }],
+                    searchConfig: {
+                        hideSearchPanel: true,
+                        defaultFilter: {url: '/findByType', fieldName: 'type', fieldValue: 'ABC'}
+                    },
+                    itemsPerPage: 4 }">
+                </div>
+            </div>
+
         </div>
 
     </div>
