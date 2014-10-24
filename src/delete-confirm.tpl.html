@@ -6,7 +6,7 @@
  <div class="modal-body"> 	
  	Are you sure you want to delete this record?<br><br>
  	<ul>
- 	  <li ng-repeat="col in gridOptions.columnDefs"><b>{{col.displayName}}</b> = {{object[col.field]}}</li>
+ 	  <li ng-repeat="col in gridOptions.columnDefs" ng-if="!col.hide"><b>{{col.displayName}}</b> = {{object[col.field]}}</li>
  	</ul>
 </div> <!-- .modal-body   -->
 

@@ -43,7 +43,8 @@
                 <div ng-show="!(searchFilter | allPropertiesEmpty)">
                     <span class="glyphicon glyphicon-search"></span> : <span ng-show="searchLogic.and">AND</span><span ng-show="!searchLogic.and">OR</span>
                     <div ng-repeat="col in gridOptions.columnDefs">
-                        <li ng-if="col.searchable">{{col.displayName}} = {{ searchFilter[col.field] }}</li>
+                        <li ng-if="col.searchable && col.type=='S'">"{{col.displayName}}" contains:  {{ searchFilter[col.field] }}</li>
+                        <li ng-if="col.searchable && col.type!='S'">"{{col.displayName}}" = {{ searchFilter[col.field] }}</li>
                     </div>
                 </div>
                 <div ng-show="!loading" >

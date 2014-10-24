@@ -234,6 +234,6 @@ module.exports = function(grunt) {
 		[ 'bump-only:major', 'build', 'bump-commit' ]
 	);
 
-	grunt.registerTask('default', ['build', 'watch']);	
+	grunt.registerTask('default', ['build', 'copy:deploy_index', 'watch']);	
 
 };

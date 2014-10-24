@@ -169,6 +169,7 @@
                     columnDefs: [
                         {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true, sortable: false},
                         {field: 'code', displayName: 'Stream Number', width:'col-md-2', required: true, validPattern: '/^[0-9]{1,10}$/'},
+                        {field: 'type', defaultOnAdd: 'ABC', hide: true},
                         {field: 'desc', displayName: 'Description', width:'col-md-8', required: true, validPattern: '/^[_ \'0-9%A-Za-z/]{1,50}$/', type: 'S' }
                     ],
                     orderBy: [{ field: 'id', sort: 'asc' }],

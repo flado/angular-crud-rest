@@ -167,8 +167,13 @@
                 if (hasSearchFilter) {
                     for (var field in scope.searchFilter) {
                         if (scope.searchFilter.hasOwnProperty(field)) {
-                            if (scope.searchFilter[field].trim().length > 0) {
-                                queryParams[field] = scope.searchFilter[field].trim();
+                            if (scope.searchFilter[field] &&  scope.searchFilter[field].trim().length > 0) {
+                                if (scope.colDefMap[field].type  == 'S') { //search by partial content
+                                    queryParams[field] = '%' + scope.searchFilter[field].trim() + '%';
+                                } else {
+                                    queryParams[field] = scope.searchFilter[field].trim();
+                                }
+                                
                             } else if (scope.colDefMap[field].type  == 'S'){ //default search value for Strings
                                 queryParams[field] = '%';
                             }
