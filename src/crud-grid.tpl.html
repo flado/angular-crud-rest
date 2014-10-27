@@ -47,7 +47,11 @@
                         <li ng-if="col.searchable && col.type!='S'">"{{col.displayName}}" = {{ searchFilter[col.field] }}</li>
                     </div>
                 </div>
-                <div ng-show="!loading" >
+                <div ng-show="!loading" class="pull-right">
+                    <!-- Select pagination size -->
+                    Items per page:&nbsp;
+                    <select class="form-control" ng-change="refresh()" style="width: 90px; display: inline" ng-model="pagination.itemsPerPage" ng-options="size for size in pageSizes"></select>
+                    &nbsp;&nbsp;&nbsp;
                     <pagination total-items="pagination.totalItems"
                         page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
                         max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>
@@ -148,7 +152,7 @@
         </td>
         <td colspan="{{headerColSpan}}">
             <span ng-show="!loading" class="pull-left"><i class="glyphicon glyphicon-hand-right"></i> Total Items: {{pagination.totalItems}}</span>
-            <span ng-show="!loading" class="pull-right">
+            <span ng-show="!loading" class="pull-right">                
                 <pagination total-items="pagination.totalItems"
                         page="pagination.currentPage" items-per-page="pagination.itemsPerPage"
                         max-size="pagination.maxSize" class="pull-right" rotate="true" num-pages="pagination.numPages"></pagination>

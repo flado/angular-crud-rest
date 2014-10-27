@@ -55,7 +55,7 @@
             scope.previous = "<< Previous";
             scope.next = "Next >>";
 
-
+            scope.pageSizes = [10, 25, 50, 100, 200, 500, 1000, 5000, 10000, 20000];
 
             scope.colDefMap = {}; //key: field name
 
