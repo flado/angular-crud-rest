@@ -196,8 +196,14 @@
                 if (scope.gridOptions.searchConfig) {
                     var defaultFilter = scope.gridOptions.searchConfig.defaultFilter;
                     if (defaultFilter) {
-                        queryParams[defaultFilter.fieldName] = defaultFilter.fieldValue;
-                        searchPostfix = '/search' + defaultFilter.url;
+                        if (hasSearchFilter) {
+                            if (!queryParams[defaultFilter.fieldName]) {
+                                queryParams[defaultFilter.fieldName] = defaultFilter.fieldValue;    
+                            }
+                        } else {
+                            queryParams[defaultFilter.fieldName] = defaultFilter.fieldValue;
+                            searchPostfix = '/search' + defaultFilter.url;
+                        }                        
                     }
                 }
 
