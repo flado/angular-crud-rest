@@ -52,7 +52,7 @@
 
                         if (operation == 'ADD' || operation == 'UPDATE') {
 
-                            if (operation == 'UPDATE') {                                
+                            if (operation == 'UPDATE') {
                                 if (object.code == object.$old_code) {//if PK was not updated
                                     result.valid = true;
                                     deferred.resolve(result);
@@ -70,9 +70,9 @@
                                             result.message = 'Another stream with code: ' + object.code + ' already exists';
                                         } else {
                                             result.valid = true;
-                                        }                                        
+                                        }
                                     } else { //no records found
-                                        result.valid = true;                                        
+                                        result.valid = true;
                                     }
                                     //resolve promise
                                     deferred.resolve(result);
@@ -94,6 +94,7 @@
                 toastr.options.closeButton = true;
                 return {
                     notify: function(operation, status, data) {
+                        var data = data.response;
                         $log.debug('## notify - operation:', operation, '  ## status: ', status, ' ## data: ', data);
                         if (operation == 'ADD') {
                             if (status == 201) {

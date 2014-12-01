@@ -99,7 +99,9 @@
                 var col = scope.gridOptions.columnDefs[i];
                 //derive if col is searchable
                 if (scope.hasSearchPanel && scope.gridOptions.searchConfig.fields.indexOf(col.field) > -1) {
-                    col.searchable = true;
+                    if (!col.hasOwnProperty('searchable')) {
+                        col.searchable = true;
+                    }
                     scope.searchFilter[col.field] = '';//empty string
                 }
                 scope.colDefMap[col.field] = col;
@@ -173,7 +175,7 @@
                                 } else {
                                     queryParams[field] = scope.searchFilter[field].trim();
                                 }
-                                
+
                             } else if (scope.colDefMap[field].type  == 'S'){ //default search value for Strings
                                 queryParams[field] = '%';
                             }
@@ -198,12 +200,12 @@
                     if (defaultFilter) {
                         if (hasSearchFilter) {
                             if (!queryParams[defaultFilter.fieldName]) {
-                                queryParams[defaultFilter.fieldName] = defaultFilter.fieldValue;    
+                                queryParams[defaultFilter.fieldName] = defaultFilter.fieldValue;
                             }
                         } else {
                             queryParams[defaultFilter.fieldName] = defaultFilter.fieldValue;
                             searchPostfix = '/search' + defaultFilter.url;
-                        }                        
+                        }
                     }
                 }
 
@@ -213,7 +215,12 @@
                     queryParams.sort = sort;
                 }
 
-                $http({ method: 'GET', url: scope.gridOptions.baseUrl + '/' + scope.gridOptions.resourceName + searchPostfix, params: queryParams })
+                var myData = {};
+                var req = { method: 'GET', url: scope.gridOptions.baseUrl + '/' + scope.gridOptions.resourceName + searchPostfix, params: queryParams };
+                myData.resourceName = scope.gridOptions.resourceName;
+                myData.request = req;
+
+                $http(req)
                     .success(function (data, status) {
                         $log.debug('successGetCallback:', data);
                         if (data._embedded) {
@@ -230,7 +237,8 @@
                     })
                     .error(function(data, status) {
                         if (cb) cb();
-                        scope.notificationService.notify('LIST', status, data);
+                        myData.response = data;
+                        scope.notificationService.notify('LIST', status, myData);
                     });
             };
 
@@ -279,14 +287,14 @@
                                 function(result){
                                     if (!result.valid) {
                                         scope.object.$serverValidationMessage = result.message;
-                                        scope.notificationService.notify('ADD', 409, scope.object);
+                                        scope.notificationService.notify('ADD', 409, { response: scope.object });
                                     } else {
                                         doInsert(scope.object, $http);
                                     }
                                 },
                                 //promise error
                                 function(reason) {
-                                    scope.notificationService.notify('ADD', 500, reason);
+                                    scope.notificationService.notify('ADD', 500, { response: reason});
                                 }
                             );
                         } else { //no server side validation required
@@ -297,17 +305,24 @@
             };
 
             var doInsert = function(insertObj, $http) {
-                $http({ method: 'POST', url: scope.gridOptions.baseUrl + '/' + scope.gridOptions.resourceName, data: insertObj})
+                var req = { method: 'POST', url: scope.gridOptions.baseUrl + '/' + scope.gridOptions.resourceName, data: insertObj};
+                var myData = {};
+                myData.resourceName = scope.gridOptions.resourceName;
+                myData.request = req;
+                $http(req)
                 .success(function(data, status, headers, config) {
                     $log.debug('successPostCallback: ', data);
-                    scope.notificationService.notify('ADD', status, data);
+                    myData.response = data;
+                    scope.notificationService.notify('ADD', status, myData);
+
                     scope.getData(function () {
                         scope.loading = false;
                         scope.toggleAddMode();
                     });
                 })
                 .error(function(data, status) {
-                    scope.notificationService.notify('ADD', status, data);
+                    myData.response = data;
+                    scope.notificationService.notify('ADD', status, myData);
                 });
             }
 
@@ -325,15 +340,22 @@
                             };
                             $scope.delete = function() {
                                 //$http.delete(object._links.self.href).success( successCallback ).error( errorCallback ); //DOES NOT WORK IN IE
-                                $http({method: 'DELETE', url: object._links.self.href })
+                                var req = {method: 'DELETE', url: object._links.self.href };
+                                var myData = {};
+                                myData.resourceName = scope.gridOptions.resourceName;
+                                myData.request = req;
+                                $http(req)
                                     .success(function(data, status) {
                                         $modalInstance.close(data);
-                                        scope.notificationService.notify('DELETE', status, data);
+                                        myData.response = data;
+                                        //
+                                        scope.notificationService.notify('DELETE', status, myData);
                                         scope.getData(function () {
                                             scope.loading = false;
                                         });
                                     }).error(function(data, status) {
-                                        scope.notificationService.notify('DELETE', status, data);
+                                        myData.response = data;
+                                        scope.notificationService.notify('DELETE', status, myData);
                                     });
                             };
                         }
@@ -341,15 +363,21 @@
                 } else { //no $modal found
                     var r = confirm('Are you sure you want to delete this record?');
                     if (r == true) {
-                        $http({method: 'DELETE', url: object._links.self.href })
+                        var req = {method: 'DELETE', url: object._links.self.href };
+                        var myData = {};
+                        myData.resourceName = scope.gridOptions.resourceName;
+                        myData.request = req;
+                        $http(req)
                                     .success(function(data, status) {
                                         $modalInstance.close(data);
-                                        scope.notificationService.notify('DELETE', status, data);
+                                        myData.response = data;
+                                        scope.notificationService.notify('DELETE', status, myData);
                                         scope.getData(function () {
                                             scope.loading = false;
                                         });
                                     }).error(function(data, status) {
-                                        scope.notificationService.notify('DELETE', status, data);
+                                        myData.response = data;
+                                        scope.notificationService.notify('DELETE', status, myData);
                                     });
                     }
 
@@ -378,14 +406,14 @@
                                 function(result){
                                     if (!result.valid) {
                                         editObj.$serverValidationMessage = result.message;
-                                        scope.notificationService.notify('UPDATE', 409, editObj);
+                                        scope.notificationService.notify('UPDATE', 409, { response: editObj });
                                     } else {
                                         doUpdate(editObj, $http);
                                     }
                                 },
                                 //promise error
                                 function(reason) {
-                                    scope.notificationService.notify('UPDATE', 500, reason);
+                                    scope.notificationService.notify('UPDATE', 500, { response:reason });
                                 }
                             );
                         } else { //no server side validation required
@@ -397,9 +425,14 @@
 
             var doUpdate = function(editObj, $http) {
                 var cleanEditObj = cleanObject(editObj);
-                $http({ method: 'PUT', url: editObj._links.self.href, data: cleanEditObj })
+                var myData = {};
+                var req = { method: 'PUT', url: editObj._links.self.href, data: cleanEditObj };
+                myData.resourceName = scope.gridOptions.resourceName;
+                myData.request = req;
+                $http(req)
                 .success( function(data, status) {
-                    scope.notificationService.notify('UPDATE', status, data);
+                    myData.response = data;
+                    scope.notificationService.notify('UPDATE', status, myData);
                     scope.getData(function () {
                         scope.loading = false;
                         for(var i=0; i < scope.objects.length; i++) {
@@ -411,7 +444,8 @@
                 })
                 .error(function(data, status) {
                     scope.animateObject = undefined;
-                    scope.notificationService.notify('UPDATE', status, data);
+                    myData.response = data;
+                    scope.notificationService.notify('UPDATE', status, myData);
                 });
             };
 
