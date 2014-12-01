@@ -8,3 +8,14 @@ Angular grid for Spring Data REST backend
 3. npm install
 4. npm install -g bower
 5. grunt 
+
+
+
+git submodule update --init
+cd dist
+git checkout master
+cd ..
+grunt release-patch
+git status
+
+

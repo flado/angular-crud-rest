@@ -12,6 +12,7 @@
     };
 })
 
+
 .filter('allPropertiesEmpty', function () {
     var bar;
     return function (obj) {
