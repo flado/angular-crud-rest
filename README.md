@@ -3,19 +3,40 @@ angular-crud-rest
 
 Angular grid for Spring Data REST backend
 
-1. install node
-2. npm install -g grunt-cli
-3. npm install
-4. npm install -g bower
-5. grunt 
+## Installation
 
+```
+install node
+npm install -g grunt-cli
+npm install
+npm install -g bower
+grunt
+```
 
-
+## Init submodule & track master branch:
+```
 git submodule update --init
 cd dist
 git checkout master
-cd ..
-grunt release-patch
-git status
+```
 
+## Build, release & commit the main repo:
+```
+cd ..
+grunt build
+grunt release-patch
+git add .
+git commit -m "new release"
+git push origin master
+```
+
+## Commit submodule:
+
+```
+cd dist
+git status
+git add .
+git commit -m "new bower release"
+git push origin master
+```
 
