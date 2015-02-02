@@ -27,6 +27,7 @@
     };
 })
 
+
 .directive('crudGrid', function ($log, $http, $injector, $timeout, $filter) {
     return {
         restrict: 'A',
@@ -70,7 +71,6 @@
             }
 
             //TODO: validate gridOptions mandatory properties & log default values
-            var uniqueConstraint = cope.gridOptions.uniqueConstraint; //unique columns constraint
 
             if (scope.gridOptions.searchConfig) {
                 if (scope.gridOptions.searchConfig.hideSearchPanel) {
@@ -455,9 +455,13 @@
 
             scope.valueChanged = function(field, value) {
                 $log.debug('## crudGrid ## valueChanged: ', field, value);
-                if (uniqueConstraint.indexOf(field) > -1) {
+                if (scope.gridOptions.uniqueConstraint && scope.gridOptions.uniqueConstraint.indexOf(field) > -1) {
                     if (value['$old_' + field] != value[field]) {
-                        value.$uniqueDirty = true;
+                        if (value[field] && value[field].trim().length == 0 && value['$old_' + field]==null) {
+                            value.$uniqueDirty = false;
+                        } else {
+                            value.$uniqueDirty = true;
+                        }
                     } else {
                         value.$uniqueDirty = false;
                     }

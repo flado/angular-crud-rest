@@ -48,6 +48,9 @@
                 var result = { valid: false };
                 return {
                     validateAction: function(operation, object, resourceName) {
+
+                        $log.debug('## ServerValidationService.validateAction ##', operation, object, resourceName);
+
                         var deferred = $q.defer();
 
                         if (operation == 'ADD' || operation == 'UPDATE') {
@@ -235,6 +238,30 @@
                     searchConfig: {
                         hideSearchPanel: true,
                         defaultFilter: {url: '/findByType', fieldName: 'type', fieldValue: 'ABC'}
+                    },
+                    itemsPerPage: 4 }">
+                </div>
+            </div>
+            <br>
+            <h3>Using uniqueConstraint</h3>
+            <br>
+            <div ng-form="myAnotherForm">
+                <div crud-grid read-only = "gridReadOnly"
+                notification-service = "notificationService"
+                server-validation-service = "serverValidationService"
+                grid-options="{
+                    baseUrl: 'api',
+                    resourceName: 'stream',
+                    columnDefs: [
+                        {field: 'key',  displayName: 'ID', width:'col-md-1', readOnly: true, sortable: false},
+                        {field: 'code', displayName: 'Stream Number', width:'col-md-2', required: true, validPattern: '/^[0-9]{1,10}$/'},
+                        {field: 'type', displayName: 'Type', width:'col-md-2' },
+                        {field: 'desc', displayName: 'Description', width:'col-md-8', required: true, validPattern: '/^[_ \'0-9%A-Za-z/]{1,50}$/', type: 'S' }
+                    ],
+                    orderBy: [{ field: 'id', sort: 'asc' }],
+                    uniqueConstraint: ['code', 'type'],
+                    searchConfig: {
+                        hideSearchPanel: true
                     },
                     itemsPerPage: 4 }">
                 </div>
