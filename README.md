@@ -37,7 +37,7 @@ Update your bower.json file with the new version for the package.
 Commit your changes, tag the repository and push your changes to git (don't forget to include the --tags switch with your push command to your remote!)
 Bower relies solely on git tags for package version information.
 
-NOTE: 'grunt release-patch' is doing most of the work except for commiting the bower release
+NOTE: 'grunt release-patch' is doing most of the work in regars to Bower repo
 
 ```
 cd dist
@@ -65,3 +65,13 @@ bower cache clean
 bower install
 ```
 
+## Test angular-crud-rest directive
+
+A Spring Data REST sample application is provided in /java-server folder to test this directive.
+You must have JRE & Maven 3 installed to run this server.
+
+```
+cd java-server
+mvn tomcat7:run
+```
+Go to http://localhost:9444/crud-grid-rest/
