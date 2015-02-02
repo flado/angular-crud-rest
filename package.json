@@ -1,6 +1,6 @@
 {
   "name": "crud-grid",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Angular grid for Spring Data REST backend",
   "main": "index.js",
   "homepage": "https://github.com/flado/angular-crud-rest",
