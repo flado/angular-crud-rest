@@ -44,11 +44,9 @@ cd dist
 # see changes
 git status
 
-# add & commit changes: git commit -am "new bower release" (already done by:  'grunt release-patch' )
-# tag the commit: git tag -a 1.0.1 -m "Release version 1.0.1" (already done by: 'grunt release-patch')
-# push to GitHub (including tags)
-
-git push origin master --tags
+# add & commit changes: 			git commit -am "new bower release" 			(already done by:  'grunt release-patch' )
+# tag the commit: 					git tag -a 1.0.1 -m "Release version 1.0.1" (already done by: 'grunt release-patch')
+# push to GitHub (including tags): 	git push origin master --tags 				(already done by: 'grunt release-patch')
 ```
 
 ## Register with Bower (does not work under firewal)
