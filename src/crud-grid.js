@@ -393,6 +393,8 @@
                 return cleanObj;
             };
 
+
+
             scope.updateObject = function (object, elem) {
                 var editObj = object.$edit;
                 $log.debug('crudGrid.updateObject: ', editObj, elem);
