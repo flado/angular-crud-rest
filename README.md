@@ -34,19 +34,20 @@ git push origin master
 
 Make the necessary changes to your package artifact(s) (bug fixes, new features, etc, etc...whatever it might be).
 Update your bower.json file with the new version for the package.
-
 Commit your changes, tag the repository and push your changes to git (don't forget to include the --tags switch with your push command to your remote!)
 Bower relies solely on git tags for package version information.
+
+NOTE: 'grunt release-patch' is doing most of the work except for commiting the bower release
 
 ```
 cd dist
 # see changes
 git status
-# add & commit changes
-git commit -am "new bower release"
-# tag the commit
-git tag -a 1.0.1 -m "Release version 1.0.1"
+
+# add & commit changes: git commit -am "new bower release" (already done by:  'grunt release-patch' )
+# tag the commit: git tag -a 1.0.1 -m "Release version 1.0.1" (already done by: 'grunt release-patch')
 # push to GitHub (including tags)
+
 git push origin master --tags
 ```
 

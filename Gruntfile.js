@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         var repoFolder = this.filesSrc[0];
 
         var options = this.options({
-            //remote: 'origin',
+            remote: 'origin',
             tagMessage: this.options().tagName/*,
             force: this.options().force,*/
         });
@@ -27,17 +27,16 @@ module.exports = function(grunt) {
             function (callback) {
                 grunt.log.writeln('Creating local tag \'%s\' into: \'%s\'', options.tagName, repoFolder);
                 grunt.util.spawn({ cmd: 'git', args: [ 'tag', '-a', options.tagName, '-m', options.tagMessage ], opts: { cwd: repoFolder } }, callback);
-            }
-            /*,
+            },
+            //PUSH bower release:  push origin master --tags
             function (callback) {
-                grunt.log.writeln('Pushing tag \'%s\' to \'%s\' remote', options.tag, options.remote);
-                var args = [ 'push', options.remote, '--tags' ];
-
-                if (options.force) {
+                grunt.log.writeln('Pushing tag \'%s\' to \'%s\' remote', options.tagName, options.remote);
+                var args = [ 'push', options.remote, 'master', '--tags' ];
+                /*if (options.force) {
                     args.push('--force');
-                }
+                }*/
                 grunt.util.spawn({ cmd: 'git', args: args, opts: { cwd: repoFolder } }, callback);
-            },*/
+            },
         ], done);
     });
 
